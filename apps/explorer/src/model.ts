@@ -6,7 +6,20 @@ import {
   type ScanReport
 } from '@resurrect-protocol/client'
 
-export const DEFAULT_RPC_URL = 'https://rpc.mevblocker.io'
+export interface PublicRpcEndpoint {
+  readonly name: string
+  readonly url: string
+}
+
+export const DEFAULT_RPC_ENDPOINTS = [
+  { name: 'MEV Blocker', url: 'https://rpc.mevblocker.io' },
+  { name: 'PublicNode', url: 'https://ethereum-rpc.publicnode.com' },
+  { name: 'StupidTech', url: 'https://evm.stupidtech.net/v1/ethereum' },
+  { name: 'dRPC', url: 'https://eth.drpc.org' },
+  { name: 'Cloudflare', url: 'https://cloudflare-eth.com' }
+] as const satisfies readonly PublicRpcEndpoint[]
+export const DEFAULT_RPC_URL = DEFAULT_RPC_ENDPOINTS[0].url
+export const LOCAL_RPC_PLACEHOLDER = 'http://127.0.0.1:8545'
 export const DEFAULT_NAMESPACE = '0x0c07fdd466a110bea1916247b73191c331123bbc77b010462676a10d1c3928e2'
 
 export const ETHEREUM_MAX_BLOCKS_PER_TTL = ETHEREUM_MAINNET_MAX_BLOCKS_PER_TTL
@@ -23,6 +36,26 @@ export interface ScanSummary {
   scannedBlocks: string
 }
 
+export interface RpcFallbackResult<T> {
+  endpoint: PublicRpcEndpoint
+  result: T
+}
+
+export interface RpcAttemptFailure {
+  endpoint: PublicRpcEndpoint
+  error: unknown
+}
+
+export class DefaultRpcEndpointsError extends Error {
+  readonly failures: readonly RpcAttemptFailure[]
+
+  constructor(failures: readonly RpcAttemptFailure[]) {
+    super('Every default Ethereum RPC failed.')
+    this.name = 'DefaultRpcEndpointsError'
+    this.failures = failures
+  }
+}
+
 export function networkDescriptor(): NetworkDescriptor {
   return ethereumMainnetDescriptor(DEFAULT_NAMESPACE)
 }
@@ -33,6 +66,23 @@ export function normalizeRpcUrl(value: string): string {
     throw new Error('RPC URL must use HTTPS or HTTP')
   }
   return url.href
+}
+
+export async function scanWithRpcFallback<T>(
+  scan: (endpoint: PublicRpcEndpoint) => Promise<T>,
+  onAttempt: (endpoint: PublicRpcEndpoint, index: number, total: number) => void = () => {},
+  endpoints: readonly PublicRpcEndpoint[] = DEFAULT_RPC_ENDPOINTS
+): Promise<RpcFallbackResult<T>> {
+  const failures: RpcAttemptFailure[] = []
+  for (const [index, endpoint] of endpoints.entries()) {
+    onAttempt(endpoint, index, endpoints.length)
+    try {
+      return { endpoint, result: await scan(endpoint) }
+    } catch (error) {
+      failures.push({ endpoint, error })
+    }
+  }
+  throw new DefaultRpcEndpointsError(failures)
 }
 
 export function summarizeScan(report: ScanReport): ScanSummary {

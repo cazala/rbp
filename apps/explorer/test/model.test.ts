@@ -1,15 +1,19 @@
 import { describe, expect, it } from 'vitest'
 import type { ScanReport } from '@resurrect-protocol/client'
 import {
+  DEFAULT_RPC_ENDPOINTS,
   DEFAULT_NAMESPACE,
   DEFAULT_RPC_URL,
+  DefaultRpcEndpointsError,
   ETHEREUM_MAX_BLOCKS_PER_TTL,
   EXPLORER_SCAN_OPTIONS,
+  LOCAL_RPC_PLACEHOLDER,
   errorMessage,
   formatChainTime,
   friendlyError,
   networkDescriptor,
   normalizeRpcUrl,
+  scanWithRpcFallback,
   shortValue,
   summarizeScan
 } from '../src/model.js'
@@ -25,8 +29,50 @@ describe('explorer model', () => {
     expect(descriptor.registry.chainId).toBe(1n)
     expect(descriptor.registry.address).toBe('0x6F33c332e8251dcd307D85A27fCcAbd85d578910')
     expect(DEFAULT_RPC_URL).toBe('https://rpc.mevblocker.io')
+    expect(DEFAULT_RPC_ENDPOINTS).toEqual([
+      { name: 'MEV Blocker', url: 'https://rpc.mevblocker.io' },
+      { name: 'PublicNode', url: 'https://ethereum-rpc.publicnode.com' },
+      { name: 'StupidTech', url: 'https://evm.stupidtech.net/v1/ethereum' },
+      { name: 'dRPC', url: 'https://eth.drpc.org' },
+      { name: 'Cloudflare', url: 'https://cloudflare-eth.com' }
+    ])
+    expect(LOCAL_RPC_PLACEHOLDER).toBe('http://127.0.0.1:8545')
     expect(ETHEREUM_MAX_BLOCKS_PER_TTL).toBe(650_000n)
     expect(EXPLORER_SCAN_OPTIONS).toMatchObject({ maxBlockLookback: 650_000n, initialChunkSize: 10_000n })
+  })
+
+  it('tries public RPCs in order and stops on the first successful scan', async () => {
+    const endpoints = DEFAULT_RPC_ENDPOINTS.slice(0, 3)
+    const attempts: string[] = []
+    const progress: string[] = []
+    const fallback = await scanWithRpcFallback(
+      async (endpoint) => {
+        attempts.push(endpoint.name)
+        if (endpoint.name !== 'StupidTech') throw new Error(`${endpoint.name} unavailable`)
+        return 'scan report'
+      },
+      (endpoint, index, total) => progress.push(`${index + 1}/${total}:${endpoint.name}`),
+      endpoints
+    )
+
+    expect(fallback).toEqual({ endpoint: endpoints[2], result: 'scan report' })
+    expect(attempts).toEqual(['MEV Blocker', 'PublicNode', 'StupidTech'])
+    expect(progress).toEqual(['1/3:MEV Blocker', '2/3:PublicNode', '3/3:StupidTech'])
+  })
+
+  it('reports every failed default RPC so the UI can reveal manual providers', async () => {
+    const endpoints = DEFAULT_RPC_ENDPOINTS.slice(0, 2)
+    const failure = await scanWithRpcFallback(
+      async (endpoint) => { throw new Error(`${endpoint.name} unavailable`) },
+      undefined,
+      endpoints
+    ).catch((error: unknown) => error)
+
+    expect(failure).toBeInstanceOf(DefaultRpcEndpointsError)
+    expect((failure as DefaultRpcEndpointsError).failures.map(({ endpoint, error }) => [endpoint.name, errorMessage(error)])).toEqual([
+      ['MEV Blocker', 'MEV Blocker unavailable'],
+      ['PublicNode', 'PublicNode unavailable']
+    ])
   })
 
   it('normalizes HTTP providers and rejects other transports', () => {

@@ -7,7 +7,15 @@ The explorer is a small static browser application built on `@resurrect-protocol
 1. **Discovery:** Ethereum contains an unexpired, cryptographically valid signed peer record.
 2. **Liveness:** this browser established a Noise-authenticated libp2p connection to that exact peer and received a standard libp2p ping response.
 
-The Ethereum provider can be an editable JSON-RPC URL or an injected EIP-1193 wallet provider. The default is `https://rpc.mevblocker.io`. That URL is a UI convenience, not part of the Resurrect protocol or network descriptor. Injected discovery is read-only and never requests wallet accounts.
+The initial interface has one action: **Scan**. It tries these browser-compatible public Ethereum RPCs in order and stops at the first complete scan:
+
+1. `https://rpc.mevblocker.io`
+2. `https://ethereum-rpc.publicnode.com`
+3. `https://evm.stupidtech.net/v1/ethereum`
+4. `https://eth.drpc.org`
+5. `https://cloudflare-eth.com`
+
+The loading line names the active RPC and advances automatically when a provider fails. Only after every default fails does the explorer reveal an editable Ethereum RPC field and injected-wallet option. The defaults are UI conveniences, not part of the Resurrect protocol or network descriptor. Injected discovery is read-only and never requests wallet accounts.
 
 The canonical Ethereum profile scans a conservative 650,000-block window: the 648,000 execution slots that fit inside the registry's 90-day `MAX_TTL`, plus a 2,000-block confirmation and boundary margin. It uses `eth_getLogs` in 10,000-block chunks and does not request historical state or historical block bodies. This works with ordinary full-node RPC service; it does not require an archive node. Custom and wallet providers can still impose their own method, range, CORS, or rate limits.
 
@@ -17,6 +25,14 @@ The canonical Ethereum profile scans a conservative 650,000-block window: the 64
 pnpm install
 pnpm dev:explorer
 ```
+
+To test from another device on the same network, bind Vite to all local interfaces:
+
+```bash
+pnpm --dir apps/explorer run dev -- --host 0.0.0.0
+```
+
+Open the printed network URL on the other device. The manual fallback placeholder, `http://127.0.0.1:8545`, is the standard local execution-client RPC address. `127.0.0.1` always means the device running the browser; use the node machine's LAN address instead when they are different devices. A browser-accessible node must also allow the explorer origin through CORS.
 
 Build deployable static files with:
 

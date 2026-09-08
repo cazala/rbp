@@ -59,6 +59,8 @@ The explorer does not need an archive node. Ethereum permits at most one executi
 
 This avoids the historical `eth_getBlockByNumber` calls that some free RPCs time out or classify as premium history. It also retains Resurrect's recovery property: a static copy can discover peers from Ethereum without depending on a Resurrect-operated server.
 
+The hosted interface automatically tries an ordered, source-visible set of public Ethereum RPCs. It shows the provider currently being queried and falls through on any incomplete scan. A custom RPC field and read-only injected-wallet path remain hidden until every default fails. This improves availability without making any provider authoritative: each successful result is still decoded and cryptographically validated by the browser client.
+
 An HTTP index can be added later as an optional accelerator, but it must never be the only path. An index can omit events and is unavailable if its operator or domain disappears. Bloom filters do not remove the need for an RPC query; `eth_getLogs` already uses the node's indexed receipts and bloom data. Publishing seed announcements more often also does not shorten the safe scan window while 90-day records remain valid, and it increases gas and duplicate logs.
 
 ## Release gate

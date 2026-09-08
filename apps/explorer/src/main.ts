@@ -4,16 +4,20 @@ import {
   jsonRpcProvider,
   type BrowserPeerCandidate,
   type Eip1193Provider,
+  type RegistryProvider,
   type ScanReport
 } from '@resurrect-protocol/client'
 import {
-  DEFAULT_RPC_URL,
+  DEFAULT_RPC_ENDPOINTS,
+  DefaultRpcEndpointsError,
   EXPLORER_SCAN_OPTIONS,
+  LOCAL_RPC_PLACEHOLDER,
   errorMessage,
   formatChainTime,
   friendlyError,
   networkDescriptor,
   normalizeRpcUrl,
+  scanWithRpcFallback,
   shortValue,
   summarizeScan
 } from './model.js'
@@ -26,7 +30,6 @@ declare global {
   }
 }
 
-type ProviderMode = 'rpc' | 'wallet'
 const descriptor = networkDescriptor()
 const app = document.querySelector<HTMLDivElement>('#app')
 if (app == null) throw new Error('Explorer mount point is missing')
@@ -34,40 +37,39 @@ if (app == null) throw new Error('Explorer mount point is missing')
 app.innerHTML = `
   <div class="shell">
     <header>
-      <a class="wordmark" href="./" aria-label="Resurrect Explorer home"><span>R</span>resurrect</a>
+      <a class="wordmark" href="./" aria-label="Resurrect Explorer home"><span aria-hidden="true">./</span>resurrect</a>
       <nav aria-label="Project links">
-        <a href="https://etherscan.io/address/${descriptor.registry.address}#code" target="_blank" rel="noreferrer">Ethereum</a>
-        <a href="https://github.com/cazala/resurrect" target="_blank" rel="noreferrer">GitHub ↗</a>
+        <a href="https://etherscan.io/address/${descriptor.registry.address}#code" target="_blank" rel="noreferrer">contract</a>
+        <a href="https://github.com/cazala/resurrect" target="_blank" rel="noreferrer">source↗</a>
       </nav>
     </header>
 
     <main>
       <section class="intro">
-        <p class="eyebrow">Peer recovery</p>
-        <h1>Find a live peer.</h1>
-        <p>Read a signed endpoint from Ethereum, then authenticate and ping it.</p>
+        <p class="eyebrow">ethereum // peer recovery</p>
+        <h1>find_peer()</h1>
+        <p>Scan the registry. Verify the record. Ping the peer.</p>
       </section>
 
-      <form id="provider-form">
-        <div class="provider-tabs" role="radiogroup" aria-label="Ethereum provider">
-          <button class="provider-tab active" type="button" role="radio" aria-checked="true" data-mode="rpc">Public RPC</button>
-          <button class="provider-tab" type="button" role="radio" aria-checked="false" data-mode="wallet">Wallet</button>
-        </div>
+      <section class="controls" aria-label="Ethereum registry scan">
+        <button class="scan-button" id="scan-button" type="button"><span id="scan-button-label">Scan</span><span aria-hidden="true">[enter]</span></button>
 
-        <div class="provider-row" id="rpc-field">
-          <label class="sr-only" for="rpc-url">Ethereum JSON-RPC URL</label>
-          <input id="rpc-url" name="rpc-url" type="url" value="${DEFAULT_RPC_URL}" aria-label="Ethereum JSON-RPC URL" spellcheck="false" autocomplete="off" />
+        <div class="fallback" id="provider-fallback" hidden>
+          <p class="fallback-copy"><strong>Default RPCs didn’t work.</strong> Enter an Ethereum RPC or connect your wallet.</p>
+          <form class="fallback-form" id="fallback-form">
+            <label class="sr-only" for="rpc-url">Ethereum JSON-RPC URL</label>
+            <input id="rpc-url" name="rpc-url" type="url" placeholder="${LOCAL_RPC_PLACEHOLDER}" aria-label="Ethereum JSON-RPC URL" spellcheck="false" autocomplete="off" />
+            <button id="custom-rpc-button" type="submit">Use RPC</button>
+            <button id="wallet-button" type="button">Wallet</button>
+          </form>
+          <p class="form-error" id="form-error" role="alert" hidden></p>
         </div>
-        <p class="provider-note" id="wallet-note" hidden>Read-only. No account request.</p>
-
-        <button class="discover-button" id="scan-button" type="submit"><span id="scan-button-label">Discover</span><span aria-hidden="true">→</span></button>
-        <p class="form-error" id="form-error" role="alert" hidden></p>
-      </form>
+      </section>
 
       <section class="network" aria-live="polite">
         <div class="status-line">
-          <div class="status idle" id="connection-status"><i></i><span id="connection-label">Ready</span></div>
-          <span id="scan-context">Ethereum mainnet · Resurrect v1</span>
+          <div class="status idle" id="connection-status"><i></i><span id="connection-label">idle</span></div>
+          <span id="scan-context">ethereum:1 // resurrect:v1</span>
         </div>
 
         <div class="summary" id="scan-summary" hidden>
@@ -77,70 +79,118 @@ app.innerHTML = `
         </div>
 
         <div class="peer-list" id="peer-list">
-          <p class="empty">Discover signed browser peers, then prove one is live.</p>
+          <p class="empty">ready to scan signed peer records.</p>
         </div>
       </section>
     </main>
   </div>
 `
 
-const form = requiredElement<HTMLFormElement>('provider-form')
+const fallback = requiredElement<HTMLElement>('provider-fallback')
+const fallbackForm = requiredElement<HTMLFormElement>('fallback-form')
 const rpcInput = requiredElement<HTMLInputElement>('rpc-url')
-const rpcField = requiredElement<HTMLElement>('rpc-field')
-const walletNote = requiredElement<HTMLElement>('wallet-note')
 const scanButton = requiredElement<HTMLButtonElement>('scan-button')
 const scanButtonLabel = requiredElement<HTMLElement>('scan-button-label')
+const customRpcButton = requiredElement<HTMLButtonElement>('custom-rpc-button')
+const walletButton = requiredElement<HTMLButtonElement>('wallet-button')
 const formError = requiredElement<HTMLElement>('form-error')
-let providerMode: ProviderMode = 'rpc'
 let scanNumber = 0
 let activeProbe: PeerProbeSession | undefined
 
-for (const button of document.querySelectorAll<HTMLButtonElement>('[data-mode]')) {
-  button.addEventListener('click', () => selectMode(button.dataset.mode === 'wallet' ? 'wallet' : 'rpc'))
-}
-form.addEventListener('submit', (event) => { event.preventDefault(); void scan() })
+scanButton.addEventListener('click', () => { void scanDefaults() })
+fallbackForm.addEventListener('submit', (event) => { event.preventDefault(); void scanCustomRpc() })
+walletButton.addEventListener('click', () => { void scanWallet() })
 window.addEventListener('pagehide', () => { void activeProbe?.close() })
 
-function selectMode(mode: ProviderMode): void {
-  providerMode = mode
-  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-mode]')) {
-    const active = button.dataset.mode === mode
-    button.classList.toggle('active', active)
-    button.setAttribute('aria-checked', String(active))
-  }
-  rpcField.hidden = mode !== 'rpc'
-  walletNote.hidden = mode !== 'wallet'
-  clearError()
-}
-
-async function scan(): Promise<void> {
-  const currentScan = ++scanNumber
-  clearError()
-  setBusy(true)
-  setStatus('loading', 'Scanning')
-  requiredElement<HTMLElement>('scan-context').textContent = 'Reading recent registry events…'
-  requiredElement<HTMLElement>('scan-summary').hidden = true
-  renderEmpty('Reading Ethereum…')
+async function scanDefaults(): Promise<void> {
+  const currentScan = await beginScan()
+  fallback.hidden = true
   try {
-    await activeProbe?.close()
-    activeProbe = undefined
-    const provider = providerMode === 'rpc'
-      ? jsonRpcProvider(normalizeRpcUrl(rpcInput.value))
-      : injectedProvider(requireInjectedProvider())
-    const report = await new ResurrectBrowserClient(descriptor, provider).scan(EXPLORER_SCAN_OPTIONS)
+    const { endpoint, result } = await scanWithRpcFallback(
+      async ({ url }) => new ResurrectBrowserClient(descriptor, jsonRpcProvider(url)).scan(EXPLORER_SCAN_OPTIONS),
+      (endpoint, index, total) => {
+        if (currentScan !== scanNumber) return
+        setStatus('loading', 'scanning')
+        requiredElement<HTMLElement>('scan-context').textContent = `rpc ${index + 1}/${total} // ${endpoint.name} // ${new URL(endpoint.url).host}`
+        renderEmpty(`querying ${endpoint.name}…`)
+      }
+    )
     if (currentScan !== scanNumber) return
-    renderReport(report)
-    setStatus('connected', 'Found')
+    renderReport(result, endpoint.name)
+    setStatus('connected', 'found')
   } catch (error) {
     if (currentScan !== scanNumber) return
-    formError.textContent = friendlyError(error)
-    formError.hidden = false
-    setStatus('error', 'Failed')
-    requiredElement<HTMLElement>('scan-context').textContent = 'Choose another provider and retry.'
-    renderEmpty('Discovery did not complete.')
+    if (error instanceof DefaultRpcEndpointsError) {
+      fallback.hidden = false
+      setStatus('error', 'rpc failed')
+      requiredElement<HTMLElement>('scan-context').textContent = `tried ${DEFAULT_RPC_ENDPOINTS.length} public RPCs // manual fallback ready`
+      renderEmpty('scan incomplete.')
+      rpcInput.focus()
+    } else {
+      showProviderError(error)
+    }
   } finally {
     if (currentScan === scanNumber) setBusy(false)
   }
+}
+
+async function scanCustomRpc(): Promise<void> {
+  let url: string
+  try {
+    url = normalizeRpcUrl(rpcInput.value)
+  } catch (error) {
+    showProviderError(error)
+    return
+  }
+  await scanSingleProvider(jsonRpcProvider(url), `custom // ${new URL(url).host}`)
+}
+
+async function scanWallet(): Promise<void> {
+  let provider: RegistryProvider
+  try {
+    provider = injectedProvider(requireInjectedProvider())
+  } catch (error) {
+    showProviderError(error)
+    return
+  }
+  await scanSingleProvider(provider, 'injected wallet')
+}
+
+async function scanSingleProvider(provider: RegistryProvider, label: string): Promise<void> {
+  const currentScan = await beginScan()
+  setStatus('loading', 'scanning')
+  requiredElement<HTMLElement>('scan-context').textContent = `rpc // ${label}`
+  renderEmpty(`querying ${label}…`)
+  try {
+    const report = await new ResurrectBrowserClient(descriptor, provider).scan(EXPLORER_SCAN_OPTIONS)
+    if (currentScan !== scanNumber) return
+    renderReport(report, label)
+    setStatus('connected', 'found')
+  } catch (error) {
+    if (currentScan !== scanNumber) return
+    showProviderError(error)
+  } finally {
+    if (currentScan === scanNumber) setBusy(false)
+  }
+}
+
+async function beginScan(): Promise<number> {
+  const currentScan = ++scanNumber
+  clearError()
+  setBusy(true)
+  requiredElement<HTMLElement>('scan-summary').hidden = true
+  await activeProbe?.close()
+  activeProbe = undefined
+  return currentScan
+}
+
+function showProviderError(error: unknown): void {
+  fallback.hidden = false
+  formError.textContent = friendlyError(error)
+  formError.hidden = false
+  setStatus('error', 'failed')
+  requiredElement<HTMLElement>('scan-context').textContent = 'manual provider failed // retry or scan defaults'
+  renderEmpty('scan incomplete.')
 }
 
 function renderEmpty(message: string): void {
@@ -151,12 +201,12 @@ function renderEmpty(message: string): void {
   list.replaceChildren(empty)
 }
 
-function renderReport(report: ScanReport): void {
+function renderReport(report: ScanReport, provider: string): void {
   const summary = summarizeScan(report)
   requiredElement<HTMLElement>('metric-announcements').textContent = summary.announcements
   requiredElement<HTMLElement>('metric-peers').textContent = summary.browserPeers
   requiredElement<HTMLElement>('metric-head').textContent = summary.confirmedHead
-  requiredElement<HTMLElement>('scan-context').textContent = formatChainTime(report.headTimestamp)
+  requiredElement<HTMLElement>('scan-context').textContent = `${provider} // ${formatChainTime(report.headTimestamp)}`
   requiredElement<HTMLElement>('scan-summary').hidden = false
   const list = requiredElement<HTMLElement>('peer-list')
   list.replaceChildren()
@@ -240,13 +290,15 @@ async function runProbe(
 }
 
 function requireInjectedProvider(): Eip1193Provider {
-  if (window.ethereum == null) throw new Error('No browser wallet was found. Enable one or use Public RPC.')
+  if (window.ethereum == null) throw new Error('No browser wallet was found. Enable one or enter an Ethereum RPC URL.')
   return window.ethereum
 }
 
 function setBusy(busy: boolean): void {
   scanButton.disabled = busy
-  scanButtonLabel.textContent = busy ? 'Scanning…' : 'Discover'
+  customRpcButton.disabled = busy
+  walletButton.disabled = busy
+  scanButtonLabel.textContent = busy ? 'Scanning…' : 'Scan'
 }
 
 function setStatus(state: 'loading' | 'connected' | 'error', label: string): void {

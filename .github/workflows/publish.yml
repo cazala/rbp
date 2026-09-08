@@ -89,7 +89,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: cargo test --workspace --all-targets --locked
       - run: forge test --root contracts
-      - run: pnpm --recursive test
+      - run: pnpm --recursive run test
       - run: scripts/checklist-integration.sh
 
   publish-release:

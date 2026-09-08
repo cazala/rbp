@@ -1,11 +1,19 @@
 import {
+  ETHEREUM_MAINNET_MAX_BLOCKS_PER_TTL,
   ethereumMainnetDescriptor,
   type NetworkDescriptor,
+  type ScanOptions,
   type ScanReport
 } from '@resurrect-protocol/client'
 
-export const DEFAULT_RPC_URL = 'https://eth.drpc.org'
+export const DEFAULT_RPC_URL = 'https://rpc.mevblocker.io'
 export const DEFAULT_NAMESPACE = '0x0c07fdd466a110bea1916247b73191c331123bbc77b010462676a10d1c3928e2'
+
+export const ETHEREUM_MAX_BLOCKS_PER_TTL = ETHEREUM_MAINNET_MAX_BLOCKS_PER_TTL
+export const EXPLORER_SCAN_OPTIONS: Readonly<ScanOptions> = {
+  maxBlockLookback: ETHEREUM_MAX_BLOCKS_PER_TTL,
+  initialChunkSize: 10_000n
+}
 
 export interface ScanSummary {
   announcements: string
@@ -51,5 +59,36 @@ export function shortValue(value: string, leading = 10, trailing = 8): string {
 }
 
 export function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : String(error)
+  return nestedErrorMessage(error, new Set(), 0) ?? 'The provider request failed.'
+}
+
+export function friendlyError(error: unknown): string {
+  const message = errorMessage(error)
+  if (/free plan|archive|historical|request timeout|eth_getlogs|block range|range limit/i.test(message)) {
+    return 'This provider cannot serve the recent event scan. Try another public Ethereum RPC.'
+  }
+  if (/chain id|does not match/i.test(message)) {
+    return `${message} Switch the wallet to Ethereum mainnet or use Public RPC.`
+  }
+  if (/failed to fetch|network error|cors|load failed/i.test(message)) {
+    return 'The provider could not be reached. Check its URL and browser access policy.'
+  }
+  return message
+}
+
+function nestedErrorMessage(value: unknown, visited: Set<object>, depth: number): string | undefined {
+  if (typeof value === 'string') return value.trim() || undefined
+  if (value instanceof Error && value.message.trim() !== '') return value.message
+  if (typeof value !== 'object' || value == null || depth > 3 || visited.has(value)) return undefined
+  visited.add(value)
+  const record = value as Record<string, unknown>
+  for (const key of ['shortMessage', 'message', 'reason', 'details'] as const) {
+    const candidate = record[key]
+    if (typeof candidate === 'string' && candidate.trim() !== '') return candidate
+  }
+  for (const key of ['error', 'cause', 'data', 'originalError'] as const) {
+    const candidate = nestedErrorMessage(record[key], visited, depth + 1)
+    if (candidate != null) return candidate
+  }
+  return undefined
 }

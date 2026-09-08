@@ -23,7 +23,7 @@ try {
 }
 ```
 
-The injected adapter only forwards methods requested by discovery. Scanning uses `eth_chainId`, `eth_call`, `eth_getBlockByNumber`, and `eth_getLogs`; it never calls `eth_requestAccounts`.
+The injected adapter only forwards methods requested by discovery. Scanning uses `eth_chainId`, `eth_call`, `eth_getBlockByNumber`, and `eth_getLogs`; it never calls `eth_requestAccounts`. Provider rejections may be plain EIP-1193 objects instead of JavaScript `Error` instances, so host applications should extract nested `message`, `reason`, or `data` errors rather than rendering `String(error)`.
 
 ## URL privacy
 
@@ -37,7 +37,9 @@ An RPC operator can still observe the user's IP, namespace, contract, and query 
 
 ## Validation and scan behavior
 
-Before logs are used the client verifies exact descriptor structure, chain ID, and the deployed registry constants. It selects a confirmed head, binary-searches the maximum-TTL timestamp window, requests filtered event logs in bounded chunks, and reduces the range after provider limit errors.
+Before logs are used the client verifies exact descriptor structure, chain ID, and the deployed registry constants. By default it selects a confirmed head and binary-searches the maximum-TTL timestamp window. A chain profile may instead supply `maxBlockLookback`, a conservative upper bound on the number of blocks that can occur during `MAX_TTL`. That mode needs only the latest block plus filtered event logs, avoiding historical state and historical block-body queries. In both modes it scans bounded chunks and reduces the range after provider limit or request-timeout errors.
+
+For post-merge Ethereum, at most one execution block can occur per 12-second slot. The reference explorer uses 650,000 blocks: 648,000 slots in 90 days plus a 2,000-block confirmation/boundary margin. This is a receipt/log query, not an archive-state query. Do not copy that number to a chain with a different production bound.
 
 Each event is checked for source, topic, namespace, accepted codec, expiry against chain time, and bounded record size. Codec 2 is opened and certified in the standard libp2p Signed Envelope domain; the payload peer ID must match the signing public key. Candidates are sequence-deduplicated and retained under a deterministic cap.
 
@@ -52,16 +54,15 @@ The scanner does not create a browser libp2p node or perform an application requ
 The static reference application in `apps/explorer` is deployed at
 [resurrect.caza.la](https://resurrect.caza.la). It uses the canonical Ethereum
 deployment and the repository's demonstration namespace. The default public RPC
-is `https://eth.drpc.org`; users can replace it in memory or select an injected
+is `https://rpc.mevblocker.io`; users can replace it in memory or select an injected
 wallet provider. Selecting a wallet does not connect an account, request a
 signature, or submit a transaction.
 
-After a scan, the explorer reports four distinct values:
+After a scan, the explorer reports three distinct values:
 
 - matching registry announcements processed in the bounded scan;
 - deduplicated, unexpired browser-compatible candidates;
-- rejected or native-only records; and
-- the confirmed head and scanned block window.
+- and the confirmed head.
 
 None is an authoritative network-size metric. Registry events persist after a
 peer becomes unreachable, one peer may announce repeatedly, and participants
@@ -82,7 +83,7 @@ Noise remains the end-to-end peer authentication layer.
 
 ## Resource options
 
-`scan` accepts confirmations, initial/minimum chunk width, maximum raw logs, maximum retained candidates, maximum endpoints per signed record, and a private-endpoint opt-in. Counts must be positive safe integers and block quantities must be non-negative. Defaults follow the v1 resource recommendations.
+`scan` accepts confirmations, a chain-profile `maxBlockLookback`, initial/minimum chunk width, maximum raw logs, maximum retained candidates, maximum endpoints per signed record, and a private-endpoint opt-in. Counts must be positive safe integers and block quantities must be non-negative. A supplied lookback must conservatively cover every block that can occur during the full TTL; making it smaller is an availability bug.
 
 ## Error handling
 

@@ -54,6 +54,12 @@ export interface BrowserPeerCandidate {
 
 export interface ScanOptions {
   confirmations?: bigint
+  /**
+   * Conservatively bounded number of blocks that can fit inside MAX_TTL on
+   * the selected chain. When supplied, the scanner avoids historical block
+   * lookups and derives the log window directly from the confirmed head.
+   */
+  maxBlockLookback?: bigint
   initialChunkSize?: bigint
   minimumChunkSize?: bigint
   maxLogs?: number

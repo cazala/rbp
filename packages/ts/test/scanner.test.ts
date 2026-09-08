@@ -23,10 +23,12 @@ const dataParameters = parseAbiParameters('uint64 validUntil, bytes peerRecord')
 
 class MockProvider implements RegistryProvider {
   readonly calls: string[] = []
+  readonly blockTags: unknown[] = []
   readonly chainId: bigint
   readonly records: Array<{ validUntil: bigint; recordHex: Hex }>
   failLogs = false
   rangeFailures = 0
+  rangeFailureMessage = 'block range exceeds provider limit'
 
   constructor(
     chainId = 31337n,
@@ -55,6 +57,7 @@ class MockProvider implements RegistryProvider {
     }
     if (method === 'eth_getBlockByNumber') {
       const tag = params[0]
+      this.blockTags.push(tag)
       const number = tag === 'latest' ? 10n : BigInt(String(tag))
       return { number: toHex(number), timestamp: toHex(1000n), hash: toHex(number, { size: 32 }) }
     }
@@ -62,7 +65,7 @@ class MockProvider implements RegistryProvider {
       if (this.failLogs) throw new Error('provider unavailable')
       if (this.rangeFailures > 0) {
         this.rangeFailures -= 1
-        throw new Error('block range exceeds provider limit')
+        throw new Error(this.rangeFailureMessage)
       }
       const range = params[0] as { fromBlock: Hex; toBlock: Hex }
       if (BigInt(range.fromBlock) > 8n || BigInt(range.toBlock) < 8n) return []
@@ -164,6 +167,22 @@ describe('browser registry scanner', () => {
     expect(report.chunkReductions).toBe(1)
     expect(report.logsProcessed).toBe(2)
     expect(report.candidates).toHaveLength(1)
+  })
+
+  it('supports an archive-free block lookback and reduces free-tier timeouts', async () => {
+    const provider = new MockProvider()
+    provider.rangeFailures = 1
+    provider.rangeFailureMessage = 'JSON-RPC 30: Request timeout on the free plan'
+    const report = await new ResurrectBrowserClient(descriptor(), provider).scan({
+      confirmations: 0n,
+      maxBlockLookback: 8n,
+      initialChunkSize: 8n,
+      minimumChunkSize: 1n
+    })
+    expect(report.startBlock).toBe(3n)
+    expect(report.chunkReductions).toBe(1)
+    expect(report.candidates).toHaveLength(1)
+    expect(provider.blockTags).toEqual(['latest'])
   })
 
   it('filters expired and non-browser records while remaining bounded', async () => {

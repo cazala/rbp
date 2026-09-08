@@ -64,8 +64,8 @@ cargo clippy --workspace --all-targets --locked -- -D warnings -W clippy::pedant
 forge test --root contracts
 corepack enable
 pnpm install --frozen-lockfile
-pnpm --recursive check
-pnpm --recursive test
+pnpm --recursive run check
+pnpm --recursive run test
 ```
 
 Run the full implementer-checklist integration test with Anvil:
@@ -177,6 +177,7 @@ pnpm add @resurrect-protocol/client
 ```ts
 import {
   ResurrectBrowserClient,
+  ETHEREUM_MAINNET_MAX_BLOCKS_PER_TTL,
   deriveNamespace,
   ethereumMainnetDescriptor,
   injectedProvider,
@@ -191,10 +192,12 @@ const provider = window.ethereum
   : jsonRpcProvider(userEnteredRpcUrl)
 
 const client = new ResurrectBrowserClient(descriptor, provider)
-const { candidates } = await client.scan()
+const { candidates } = await client.scan({
+  maxBlockLookback: ETHEREUM_MAINNET_MAX_BLOCKS_PER_TTL
+})
 ```
 
-Discovery never invokes `eth_requestAccounts`. The client verifies the chain and contract constants before scanning, searches only the recent TTL window, validates libp2p signed envelopes, and retains secure browser-capable endpoints. RPC URLs remain in memory unless the application explicitly calls `persistJsonRpcUrl`.
+Discovery never invokes `eth_requestAccounts`. The client verifies the chain and contract constants before scanning, searches only the recent TTL window, validates libp2p signed envelopes, and retains secure browser-capable endpoints. The Ethereum block lookback avoids historical state and block-body access; it uses bounded `eth_getLogs` calls and does not require an archive node. RPC URLs remain in memory unless the application explicitly calls `persistJsonRpcUrl`.
 
 The package returns signed, validated dial candidates; the host application still owns its browser transport and authenticated application handshake. The repository's [hosted explorer](https://resurrect.caza.la) is a minimal reference host: it scans the canonical namespace, completes an authenticated libp2p WSS/Noise/Yamux connection, checks the remote peer ID, runs identify, and measures a standard libp2p ping. See [Browser client](docs/browser-client.md).
 

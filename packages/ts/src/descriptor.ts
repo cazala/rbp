@@ -8,6 +8,8 @@ export const ETHEREUM_MAINNET_REGISTRY_ADDRESS = getAddress(
   '0x6F33c332e8251dcd307D85A27fCcAbd85d578910'
 )
 export const ETHEREUM_MAINNET_REGISTRY_DEPLOYMENT_BLOCK = 25_882_327n
+/** 90 days of 12-second slots plus confirmation and boundary margin. */
+export const ETHEREUM_MAINNET_MAX_BLOCKS_PER_TTL = 650_000n
 export const ETHEREUM_MAINNET_REGISTRY: Readonly<RegistryDescriptor> = Object.freeze({
   chainId: ETHEREUM_MAINNET_CHAIN_ID,
   address: ETHEREUM_MAINNET_REGISTRY_ADDRESS,

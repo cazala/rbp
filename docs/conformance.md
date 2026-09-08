@@ -7,7 +7,7 @@ This map connects every item in section 29 of the specification to implementatio
 | Deploy immutable registry locally | `contracts/src/ResurrectRegistryV1.sol` | fresh `forge create`; selector surface and contract suites |
 | Generate self-authenticating record | `resurrect-libp2p::sign_peer_record` | cross-language vectors and live seed announcement |
 | Publish under arbitrary namespace | Alloy publisher and `RegistryAnnouncer` | fresh `keccak` namespaces for reboot scenarios |
-| Scan only recent TTL window | `RegistryScanner` timestamp binary search | scanner unit tests plus live recovery |
+| Scan only recent TTL window | native timestamp binary search and browser chain-bounded block lookback | scanner unit tests plus live recovery |
 | Reject invalid/expired records | core policy and both codecs | Rust/TypeScript rejection suites invoked by checklist |
 | Dial recovered endpoint | `Libp2pHost` connector | B reports `connectedVia=RESURRECT_SCAN` after Noise connection |
 | A self-announces from empty state | bootstrap controller and announcer | empty Anvil/network A scenario |

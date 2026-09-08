@@ -66,7 +66,7 @@ The reference packages pin an Ethereum mainnet instance of that bytecode at `0x6
 - the event address, namespace, codec, expiry, and record byte cap;
 - signed-record decoding, signature, identity, sequence, and endpoint policy.
 
-It binary-searches timestamps to locate the maximum-TTL window, reduces log ranges after provider limit errors, caps raw logs and active candidates, deduplicates by codec-defined identity, and detects changes to the previous head checkpoint. A reorg never turns a discovery hint into application authority.
+The general scanner binary-searches timestamps to locate the maximum-TTL window. Chain profiles with a protocol-enforced block-production bound can instead translate the TTL into a conservative block lookback and avoid historical block-body queries; the Ethereum browser profile uses 650,000 blocks. Both paths reduce log ranges after provider limits/timeouts, cap raw logs and active candidates, and deduplicate by codec-defined identity. A reorg never turns a discovery hint into application authority.
 
 ## Peer records and endpoints
 

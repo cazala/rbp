@@ -150,12 +150,12 @@ JSON
 
 "${FORGE_BIN}" test --root contracts
 cargo test --workspace --all-targets --locked
-pnpm --filter @resurrect-protocol/client test
+pnpm --filter @resurrect-protocol/client run test
 cargo build -p resurrect-node --locked
-pnpm --filter @resurrect-protocol/explorer check
-pnpm --filter @resurrect-protocol/explorer build
+pnpm --filter @resurrect-protocol/explorer run check
+pnpm --filter @resurrect-protocol/explorer run build
 RESURRECT_NODE_BIN="${NODE_BIN}" RESURRECT_TEST_WS_PORT=42008 \
-  pnpm --filter @resurrect-protocol/explorer test -- rust-interop.test.ts
+  pnpm --filter @resurrect-protocol/explorer run test -- rust-interop.test.ts
 
 cmp contracts/src/ResurrectRegistryV1.sol packages/contracts/src/ResurrectRegistryV1.sol
 cmp deployments/ethereum-mainnet.json packages/contracts/deployments/ethereum-mainnet.json

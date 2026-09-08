@@ -32,8 +32,8 @@ cargo clippy --workspace --all-targets --locked -- -D warnings -W clippy::pedant
 cargo test --workspace --all-targets --locked
 forge fmt --root contracts --check
 FOUNDRY_PROFILE=ci forge test --root contracts
-pnpm --recursive check
-pnpm --recursive test
+pnpm --recursive run check
+pnpm --recursive run test
 scripts/check-packages.sh
 scripts/checklist-integration.sh
 ```

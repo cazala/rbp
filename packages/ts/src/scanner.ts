@@ -52,16 +52,31 @@ export async function scanRegistry(
   const confirmations = options.confirmations ?? 12n
   const headNumber = BigInt(latest.number) > confirmations ? BigInt(latest.number) - confirmations : 0n
   if (headNumber < descriptor.registry.deploymentBlock) throw new Error('registry deployment is newer than confirmed head')
-  const head = headNumber === BigInt(latest.number) ? latest : await getBlock(provider, quantity(headNumber))
+  // A chain-specific block lookback lets constrained RPCs scan receipts/logs
+  // without fetching historical block bodies. The latest timestamp is the
+  // correct liveness clock; the extra lookback supplied by the caller must
+  // account for confirmations.
+  const head = options.maxBlockLookback == null && headNumber !== BigInt(latest.number)
+    ? await getBlock(provider, quantity(headNumber))
+    : latest
   const headTimestamp = BigInt(head.timestamp)
-  const cutoff = headTimestamp > BigInt(descriptor.registry.maxTtlSeconds)
-    ? headTimestamp - BigInt(descriptor.registry.maxTtlSeconds)
-    : 0n
-  const startBlock = await findStartBlock(provider, descriptor.registry.deploymentBlock, headNumber, cutoff)
+  const startBlock = options.maxBlockLookback == null
+    ? await findStartBlock(
+        provider,
+        descriptor.registry.deploymentBlock,
+        headNumber,
+        headTimestamp > BigInt(descriptor.registry.maxTtlSeconds)
+          ? headTimestamp - BigInt(descriptor.registry.maxTtlSeconds)
+          : 0n
+      )
+    : maxBigInt(
+        descriptor.registry.deploymentBlock,
+        headNumber + 1n > options.maxBlockLookback ? headNumber - options.maxBlockLookback + 1n : 0n
+      )
   const accepted = new Set(descriptor.acceptedRecordTypes)
   const maxLogs = options.maxLogs ?? 50_000
   const maxCandidates = options.maxCandidates ?? 256
-  let chunk = options.initialChunkSize ?? 20_000n
+  let chunk = options.initialChunkSize ?? 10_000n
   const minimumChunk = options.minimumChunkSize ?? 64n
   let from = startBlock
   let logsProcessed = 0
@@ -127,6 +142,7 @@ export async function scanRegistry(
 
 function validateOptions(options: ScanOptions): void {
   if ((options.confirmations ?? 0n) < 0n) throw new Error('confirmations must not be negative')
+  if ((options.maxBlockLookback ?? 1n) < 1n) throw new Error('maxBlockLookback must be positive')
   if ((options.initialChunkSize ?? 1n) < 1n) throw new Error('initialChunkSize must be positive')
   if ((options.minimumChunkSize ?? 1n) < 1n) throw new Error('minimumChunkSize must be positive')
   for (const [field, value] of [
@@ -261,7 +277,7 @@ function required<T>(value: T | undefined, field: string): T {
 
 function isRangeError(error: unknown): boolean {
   const message = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase()
-  return ['range', 'too many', 'response size', 'limit exceeded'].some((needle) => message.includes(needle))
+  return ['range', 'too many', 'response size', 'limit exceeded', 'request timeout'].some((needle) => message.includes(needle))
 }
 
 function min(left: bigint, right: bigint): bigint {

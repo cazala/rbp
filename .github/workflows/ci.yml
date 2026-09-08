@@ -54,13 +54,14 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @resurrect-protocol/client check
-      - run: pnpm --filter @resurrect-protocol/client build
-      - run: pnpm --filter @resurrect-protocol/client test
-      - run: pnpm --filter @resurrect-protocol/explorer check
-      - run: pnpm --filter @resurrect-protocol/explorer build
-      - run: pnpm --filter @resurrect-protocol/explorer test
-      - run: pnpm --dir packages/contracts test
+      - run: pnpm --filter @resurrect-protocol/client run check
+      - run: pnpm --filter @resurrect-protocol/client run build
+      - run: pnpm --filter @resurrect-protocol/client run test
+      - run: pnpm --filter @resurrect-protocol/explorer run check
+      - run: pnpm --filter @resurrect-protocol/explorer run build
+      - run: pnpm --filter @resurrect-protocol/explorer run check:size
+      - run: pnpm --filter @resurrect-protocol/explorer run test
+      - run: pnpm --dir packages/contracts run test
 
   packages:
     runs-on: ubuntu-latest

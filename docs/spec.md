@@ -452,6 +452,8 @@ cutoff = latest_finalized_timestamp - MAX_TTL
 
 The client SHOULD find an approximate `startBlock` by binary searching block timestamps between `deploymentBlock` and the latest finalized/safe block.
 
+On a chain with a consensus-enforced upper bound on block production, a client MAY instead derive a conservative block lookback covering all blocks that can occur during `MAX_TTL`, plus finality and boundary margin. This avoids historical block-body access. The derived window MUST NOT exclude any event that can still satisfy `validUntil > local_chain_time`; a chain profile MUST NOT assume an average block time where faster production is possible.
+
 The client then calls `eth_getLogs` in bounded chunks from `startBlock` to the latest sufficiently confirmed block.
 
 Suggested chunk size:
@@ -460,7 +462,7 @@ Suggested chunk size:
 10,000 to 50,000 blocks
 ```
 
-Implementations SHOULD reduce chunk size automatically when an RPC provider returns range/response-size errors.
+Implementations SHOULD reduce chunk size automatically when an RPC provider returns range, response-size, or query-timeout errors.
 
 ### 11.3 Finality and reorgs
 
@@ -1234,7 +1236,7 @@ Implement:
 Add:
 
 - second peer-record codec,
-- block timestamp binary search,
+- block timestamp binary search and chain-bounded archive-free lookback,
 - RPC fallback providers,
 - reachability checks,
 - peer diversity/scoring,

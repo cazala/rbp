@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  ETHEREUM_MAINNET_MAX_BLOCKS_PER_TTL,
   ETHEREUM_MAINNET_REGISTRY,
   deriveNamespace,
   ethereumMainnetDescriptor,
@@ -23,6 +24,7 @@ describe('network descriptor', () => {
       deploymentBlock: 25_882_327n,
       maxTtlSeconds: 7_776_000
     })
+    expect(ETHEREUM_MAINNET_MAX_BLOCKS_PER_TTL).toBe(650_000n)
     expect(descriptor.registry).toEqual(ETHEREUM_MAINNET_REGISTRY)
     expect(descriptor.namespace).toBe(namespace)
     expect(descriptor.acceptedRecordTypes).toEqual([2])

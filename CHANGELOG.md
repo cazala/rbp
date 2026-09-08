@@ -4,7 +4,24 @@ All notable changes are documented here. The project follows Semantic Versioning
 
 ## Unreleased
 
-No unreleased changes.
+### Added
+
+- An archive-free TypeScript scan mode using a chain-profile block lookback,
+  with regression coverage for free-tier request timeouts.
+- An enforced explorer artifact-size budget and ERC-5219/onchain deployment
+  guidance.
+
+### Changed
+
+- The explorer now uses a compact single-screen interface, deterministic
+  relative assets, no production source maps, and a lazy-loaded libp2p probe.
+- The default public Ethereum endpoint is `https://rpc.mevblocker.io`.
+
+### Fixed
+
+- Injected-provider errors now preserve nested wallet messages instead of
+  rendering `[object Object]`.
+- Ethereum browser discovery no longer requires historical block-body calls.
 
 ## 0.4.0 - 2026-09-03
 

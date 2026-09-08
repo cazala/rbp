@@ -35,9 +35,9 @@ The RPC URL is supplied only at test time and is never embedded in deployment me
 ## TypeScript suites
 
 ```bash
-pnpm --filter @resurrect-protocol/client check
-pnpm --filter @resurrect-protocol/client build
-pnpm --filter @resurrect-protocol/client test
+pnpm --filter @resurrect-protocol/client run check
+pnpm --filter @resurrect-protocol/client run build
+pnpm --filter @resurrect-protocol/client run test
 ```
 
 Tests cover strict descriptors, namespace parity, custom JSON-RPC, injected EIP-1193 reads without account requests, explicit-only URL persistence, wrong-chain rejection, provider replacement, constant verification, adaptive log ranges, duplicate/expiry filtering, candidate bounds, secure browser endpoints, private/native-only rejection, and signed-envelope tampering.
@@ -46,12 +46,17 @@ The private explorer application adds model and endpoint tests plus a real
 cross-runtime transport suite:
 
 ```bash
-pnpm --filter @resurrect-protocol/explorer check
-pnpm --filter @resurrect-protocol/explorer build
-pnpm --filter @resurrect-protocol/explorer test
+pnpm --filter @resurrect-protocol/explorer run check
+pnpm --filter @resurrect-protocol/explorer run build
+pnpm --filter @resurrect-protocol/explorer run check:size
+pnpm --filter @resurrect-protocol/explorer run test
 RESURRECT_NODE_BIN=target/debug/resurrect-node \
-  pnpm --filter @resurrect-protocol/explorer test -- rust-interop.test.ts
+  pnpm --filter @resurrect-protocol/explorer run test -- rust-interop.test.ts
 ```
+
+The size check rejects source maps or dependency growth that pushes the full
+onchain-oriented artifact above 525 KB raw or 160 KB gzip. The libp2p probe is a
+separate lazy chunk and is not loaded until a user requests a ping.
 
 The interoperability test starts the Rust node on a WebSocket listener, creates
 a browser-shaped JavaScript libp2p client, performs Noise/Yamux negotiation,

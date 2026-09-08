@@ -3,8 +3,11 @@ import type { ScanReport } from '@resurrect-protocol/client'
 import {
   DEFAULT_NAMESPACE,
   DEFAULT_RPC_URL,
+  ETHEREUM_MAX_BLOCKS_PER_TTL,
+  EXPLORER_SCAN_OPTIONS,
   errorMessage,
   formatChainTime,
+  friendlyError,
   networkDescriptor,
   normalizeRpcUrl,
   shortValue,
@@ -21,11 +24,13 @@ describe('explorer model', () => {
     expect(descriptor.namespace).toBe(DEFAULT_NAMESPACE)
     expect(descriptor.registry.chainId).toBe(1n)
     expect(descriptor.registry.address).toBe('0x6F33c332e8251dcd307D85A27fCcAbd85d578910')
-    expect(DEFAULT_RPC_URL).toBe('https://eth.drpc.org')
+    expect(DEFAULT_RPC_URL).toBe('https://rpc.mevblocker.io')
+    expect(ETHEREUM_MAX_BLOCKS_PER_TTL).toBe(650_000n)
+    expect(EXPLORER_SCAN_OPTIONS).toMatchObject({ maxBlockLookback: 650_000n, initialChunkSize: 10_000n })
   })
 
   it('normalizes HTTP providers and rejects other transports', () => {
-    expect(normalizeRpcUrl(' https://eth.drpc.org ')).toBe('https://eth.drpc.org/')
+    expect(normalizeRpcUrl(' https://rpc.mevblocker.io ')).toBe('https://rpc.mevblocker.io/')
     expect(normalizeRpcUrl('http://127.0.0.1:8545')).toBe('http://127.0.0.1:8545/')
     expect(() => normalizeRpcUrl('wss://rpc.example')).toThrow(/HTTPS or HTTP/)
   })
@@ -44,5 +49,11 @@ describe('explorer model', () => {
   it('preserves useful error messages', () => {
     expect(errorMessage(new Error('provider failed'))).toBe('provider failed')
     expect(errorMessage('unknown failure')).toBe('unknown failure')
+    expect(errorMessage({ code: 4001, message: 'User rejected the request' })).toBe('User rejected the request')
+    expect(errorMessage({ data: { originalError: { message: 'nested provider failure' } } })).toBe('nested provider failure')
+    expect(errorMessage({ code: -1 })).toBe('The provider request failed.')
+    expect(friendlyError({ message: 'JSON-RPC 30: Request timeout on the free plan' })).toBe(
+      'This provider cannot serve the recent event scan. Try another public Ethereum RPC.'
+    )
   })
 })

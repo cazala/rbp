@@ -17,6 +17,7 @@ Node.js 22 or newer is required for the supported server-side toolchain. The emi
 ```ts
 import {
   ResurrectBrowserClient,
+  ETHEREUM_MAINNET_MAX_BLOCKS_PER_TTL,
   deriveNamespace,
   ethereumMainnetDescriptor,
   injectedProvider,
@@ -32,7 +33,9 @@ const provider = selectedEip1193Provider
   : jsonRpcProvider(userEnteredRpcUrl)
 
 const client = new ResurrectBrowserClient(descriptor, provider)
-const report = await client.scan()
+const report = await client.scan({
+  maxBlockLookback: ETHEREUM_MAINNET_MAX_BLOCKS_PER_TTL
+})
 for (const candidate of report.candidates) {
   await yourAuthenticatedBrowserTransport.dial(candidate.peerId, candidate.endpoints)
 }
@@ -64,7 +67,10 @@ Do not log URLs containing credentials. Surface CORS, TLS, mixed-content, wrong-
 ```ts
 const report = await client.scan({
   confirmations: 12n,
-  initialChunkSize: 20_000n,
+  // Ethereum: 90 days / 12-second slots, plus confirmation/boundary margin.
+  // This avoids historical block-body requests on constrained RPCs.
+  maxBlockLookback: ETHEREUM_MAINNET_MAX_BLOCKS_PER_TTL,
+  initialChunkSize: 10_000n,
   minimumChunkSize: 64n,
   maxLogs: 50_000,
   maxCandidates: 256,
@@ -73,7 +79,9 @@ const report = await client.scan({
 })
 ```
 
-The scanner binary-searches block timestamps to avoid genesis scans and automatically reduces log ranges after common provider limit errors. Individual invalid events are counted in `recordsRejected`; provider and configuration failures reject the scan.
+Without `maxBlockLookback`, the scanner binary-searches block timestamps to avoid genesis scans. A chain profile may instead provide a conservative maximum number of blocks that can fit inside `MAX_TTL`; that path reads the latest block and bounded event logs only, so it does not require historical state or block-body access. The value MUST be large enough for the chain's maximum block production over the full TTL, including a finality/boundary margin. The scanner automatically reduces log ranges after common provider limit or timeout errors.
+
+Individual invalid events are counted in `recordsRejected`; provider and configuration failures reject the scan.
 
 `candidates` contain the peer ID, signed-record sequence, secure browser endpoints, raw signed envelope, registry expiry, block number, and log index. Duplicate peers retain the highest signed sequence, with onchain position as a tie-breaker.
 
@@ -86,6 +94,7 @@ Resurrect discovery is not application authorization. After dialing, authenticat
 ## Public API
 
 - `parseDescriptor`, `parseDescriptorJson`, `deriveNamespace`, `ethereumMainnetDescriptor`
+- `ETHEREUM_MAINNET_MAX_BLOCKS_PER_TTL` for archive-free Ethereum scans
 - `ETHEREUM_MAINNET_REGISTRY` and its chain/address/deployment-block constants
 - `jsonRpcProvider`, `injectedProvider`, `persistJsonRpcUrl`
 - `ResurrectBrowserClient`, `scanRegistry`, `verifyProvider`

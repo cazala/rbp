@@ -70,8 +70,8 @@ cargo fmt --all --check
 cargo clippy --workspace --all-targets --locked -- -D warnings -W clippy::pedantic
 cargo test --workspace --all-targets --locked
 forge test --root contracts
-pnpm --recursive check
-pnpm --recursive test
+pnpm --recursive run check
+pnpm --recursive run test
 scripts/check-packages.sh
 scripts/checklist-integration.sh
 ```

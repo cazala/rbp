@@ -122,8 +122,8 @@ main() {
   "${REPOSITORY_ROOT}/scripts/set-version.sh" "${VERSION}"
   cargo check --workspace --all-targets --locked
   pnpm install --frozen-lockfile
-  pnpm --recursive build
-  pnpm --recursive test
+  pnpm --recursive run build
+  pnpm --recursive run test
   scripts/check-packages.sh
 
   publish_crate resurrect-core

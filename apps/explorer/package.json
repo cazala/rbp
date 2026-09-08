@@ -5,13 +5,14 @@
   "description": "Static browser explorer and authenticated peer probe for Resurrect",
   "type": "module",
   "scripts": {
-    "prebuild": "pnpm --filter @resurrect-protocol/client build",
+    "prebuild": "pnpm --filter @resurrect-protocol/client run build",
     "build": "tsc --noEmit && vite build",
-    "precheck": "pnpm --filter @resurrect-protocol/client build",
+    "precheck": "pnpm --filter @resurrect-protocol/client run build",
     "check": "tsc --noEmit",
+    "check:size": "node scripts/check-size.mjs",
     "dev": "vite",
     "preview": "vite preview",
-    "pretest": "pnpm --filter @resurrect-protocol/client build",
+    "pretest": "pnpm --filter @resurrect-protocol/client run build",
     "test": "vitest run"
   },
   "dependencies": {

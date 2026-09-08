@@ -7,7 +7,9 @@ The explorer is a small static browser application built on `@resurrect-protocol
 1. **Discovery:** Ethereum contains an unexpired, cryptographically valid signed peer record.
 2. **Liveness:** this browser established a Noise-authenticated libp2p connection to that exact peer and received a standard libp2p ping response.
 
-The Ethereum provider can be an editable JSON-RPC URL or an injected EIP-1193 wallet provider. The default is `https://eth.drpc.org`. That URL is a UI convenience, not part of the Resurrect protocol or network descriptor. Injected discovery is read-only and never requests wallet accounts.
+The Ethereum provider can be an editable JSON-RPC URL or an injected EIP-1193 wallet provider. The default is `https://rpc.mevblocker.io`. That URL is a UI convenience, not part of the Resurrect protocol or network descriptor. Injected discovery is read-only and never requests wallet accounts.
+
+The canonical Ethereum profile scans a conservative 650,000-block window: the 648,000 execution slots that fit inside the registry's 90-day `MAX_TTL`, plus a 2,000-block confirmation and boundary margin. It uses `eth_getLogs` in 10,000-block chunks and does not request historical state or historical block bodies. This works with ordinary full-node RPC service; it does not require an archive node. Custom and wallet providers can still impose their own method, range, CORS, or rate limits.
 
 ## Run locally
 
@@ -19,10 +21,18 @@ pnpm dev:explorer
 Build deployable static files with:
 
 ```bash
-pnpm --dir apps/explorer build
+pnpm --dir apps/explorer run build
 ```
 
 The output is written to `apps/explorer/dist/` with relative asset URLs.
+
+Enforce the onchain-oriented artifact budget after building:
+
+```bash
+pnpm --dir apps/explorer run check:size
+```
+
+The build has deterministic relative filenames, omits source maps, and loads the large libp2p probe only when a peer is pinged. CI caps the complete artifact at 525 KB raw and 160 KB gzip. See [Onchain explorer](../../docs/onchain-explorer.md).
 
 ## Deployment
 
@@ -39,10 +49,9 @@ zone-wide write access after the custom domain is attached.
 
 ## What the explorer reports
 
-- Matching registry announcements processed in the bounded scan window.
-- Deduplicated, unexpired peers with a signed secure browser endpoint.
-- Peer ID, signed endpoints, sequence, expiry, and announcement block.
-- Live WSS connection time, standard libp2p ping RTT, remote agent, protocol version, and supported protocols.
+- Matching announcements and deduplicated browser-ready peers.
+- Peer identity, endpoint, expiry, and announcement block.
+- Live WSS connection time, ping RTT, remote agent, and protocol version.
 
 An announcement count is not a live-peer count. Announcements can be duplicated and can remain unexpired after a peer goes offline. Resurrect deliberately has no authoritative membership or topology service.
 

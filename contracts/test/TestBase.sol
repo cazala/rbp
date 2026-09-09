@@ -3,6 +3,7 @@ pragma solidity 0.8.24;
 
 interface Vm {
     function expectRevert(bytes4 selector) external;
+    function expectPartialRevert(bytes4 selector) external;
     function expectEmit(bool, bool, bool, bool, address) external;
     function prank(address sender) external;
     function warp(uint256 timestamp) external;

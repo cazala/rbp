@@ -142,6 +142,7 @@ cat >artifacts/implementer-checklist.json <<JSON
   "browserWebSocketAuthenticated": false,
   "browserPeerIdentityVerified": false,
   "browserPingAndIdentifyCompleted": false,
+  "onchainExplorerResourcesVerified": false,
   "unrelatedOperatorsRebootedAfterTotalShutdown": false,
   "noOwnerDnsHostedApiOrOriginalOperatorRequired": false,
   "simultaneousRebootFormedConnection": false
@@ -177,6 +178,19 @@ REGISTRY_ADDRESS="$(jq -r .deployedTo <<<"${DEPLOYMENT_JSON}")"
 DEPLOYMENT_TRANSACTION="$(jq -r .transactionHash <<<"${DEPLOYMENT_JSON}")"
 DEPLOYMENT_BLOCK_HEX="$("${CAST_BIN}" receipt "${DEPLOYMENT_TRANSACTION}" --rpc-url "${RPC_URL}" --json | jq -r .blockNumber)"
 DEPLOYMENT_BLOCK="$("${CAST_BIN}" to-dec "${DEPLOYMENT_BLOCK_HEX}")"
+
+DEPLOYER_PRIVATE_KEY="${ACCOUNT_A_KEY}" "${FORGE_BIN}" script \
+  --root contracts \
+  contracts/script/DeployResurrectExplorer.s.sol:DeployResurrectExplorer \
+  --rpc-url "${RPC_URL}" \
+  --broadcast \
+  --slow
+ONCHAIN_EXPLORER_ADDRESS="$(
+  jq -r '.returns.site.value // .returns.site' \
+    contracts/broadcast/DeployResurrectExplorer.s.sol/31337/run-latest.json
+)"
+CAST_BIN="${CAST_BIN}" scripts/verify-onchain-explorer.sh \
+  "${RPC_URL}" "${ONCHAIN_EXPLORER_ADDRESS}"
 
 METHODS_JSON="$("${FORGE_BIN}" inspect --root contracts src/ResurrectRegistryV1.sol:ResurrectRegistryV1 methodIdentifiers --json)"
 jq -e 'keys | sort == ["MAX_RECORD_BYTES()", "MAX_TTL()", "VERSION()", "announce(bytes32,uint32,uint32,bytes)"]' \
@@ -247,6 +261,7 @@ cat >artifacts/implementer-checklist.json <<JSON
   "browserWebSocketAuthenticated": true,
   "browserPeerIdentityVerified": true,
   "browserPingAndIdentifyCompleted": true,
+  "onchainExplorerResourcesVerified": true,
   "unrelatedOperatorsRebootedAfterTotalShutdown": true,
   "noOwnerDnsHostedApiOrOriginalOperatorRequired": true,
   "simultaneousRebootFormedConnection": true,

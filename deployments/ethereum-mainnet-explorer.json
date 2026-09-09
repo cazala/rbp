@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 1,
+  "deploymentKind": "erc-5219-static-site",
+  "application": "Resurrect Explorer",
+  "network": "ethereum-mainnet",
+  "chainId": 1,
+  "address": "0xb69aF08877a0C417169135D6710Bca4840CCCdE1",
+  "deploymentBlock": 25936611,
+  "firstDeploymentBlock": 25936585,
+  "deploymentTimestamp": "2026-09-09T01:44:35Z",
+  "transactionHash": "0x79f6fe3d1871d574d2e6e3201a08e7c1a36878648401af6f9ba597729ef88b78",
+  "deployer": "0x318027A00a3A3eB6A7d6F45C832e47c126B4F2C2",
+  "immutable": true,
+  "resolveMode": "5219",
+  "manifestHash": "0xd23db1c25fef981cc403b978336a1795c0f891ac5f1f942c4ef4b33c15c33c02",
+  "manifestEncoding": "keccak256(abi.encode(string[6] paths, string[6] contentTypes, bytes32[] resourceHashes))",
+  "runtimeBytecodeHash": "0x4e8268e3d86eea86e5b2a4b376d240273a25bee5b1d76cade546375ad6a181bf",
+  "source": {
+    "repository": "https://github.com/cazala/resurrect",
+    "commit": "5f167abf8a4d5cac38b8f56dd22f9ab236cd4c62",
+    "contractPath": "contracts/src/ResurrectOnchainSite.sol",
+    "deploymentScriptPath": "contracts/script/DeployResurrectExplorer.s.sol",
+    "explorerArtifactCommit": "dff3cc44087a4c3b1931aef9d5beb9f6c3bed73c"
+  },
+  "compiler": {
+    "language": "Solidity",
+    "version": "0.8.24",
+    "optimizer": true,
+    "optimizerRuns": 20000,
+    "bytecodeHash": "none",
+    "cborMetadata": false
+  },
+  "storage": {
+    "scheme": "immutable-contract-runtime-bytecode",
+    "sentinelBytes": 1,
+    "maxPayloadBytesPerChunk": 24000,
+    "resourceBytes": 494226,
+    "chunkContracts": 25,
+    "transactions": 26
+  },
+  "deploymentCost": {
+    "gasUsed": 110247127,
+    "weiPaid": "6929689171978036",
+    "ethPaid": "0.006929689171978036"
+  },
+  "gateways": {
+    "web3": "web3://0xb69aF08877a0C417169135D6710Bca4840CCCdE1:1/",
+    "w3eth": "https://0xb69af08877a0c417169135d6710bca4840cccde1.w3eth.io/",
+    "w3link": "https://0xb69af08877a0c417169135d6710bca4840cccde1.1.w3link.io/"
+  },
+  "ens": {
+    "name": "resurrect.cazala.eth",
+    "status": "pending-address-record"
+  },
+  "verification": {
+    "ethereumRpc": {
+      "status": "pass",
+      "resolveMode": true,
+      "manifestHash": true,
+      "allResourceBodiesByteForByte": true,
+      "resourceMetadata": true,
+      "notFoundResponse": true
+    },
+    "w3eth": {
+      "status": "pass",
+      "allAssetsByteForByte": true,
+      "htmlCompatibilityShimInjectedByGateway": true
+    },
+    "w3link": {
+      "status": "pass",
+      "allAssetsByteForByte": true,
+      "htmlCompatibilityShimInjectedByGateway": true
+    },
+    "browser": {
+      "status": "pass",
+      "gateway": "w3eth",
+      "registryScan": true,
+      "signedPeerRecord": true,
+      "noisePeerIdentity": true,
+      "identify": true,
+      "ping": true,
+      "peerId": "12D3KooWRFAprLu4b2RQzq9PWJ2sTYSYuCYA9yDJNEF5kFPYh7B6",
+      "endpoint": "/dns4/resurrect-ws.caza.la/tcp/443/wss",
+      "observedPingMilliseconds": 306,
+      "observedConnectMilliseconds": 1950
+    }
+  },
+  "resources": [
+    {
+      "path": "index.html",
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 661,
+      "keccak256": "0xb11742d9a343d4d8ca148ef1592a8cdbb470752fd60e596b8b3a329c7cd3e213",
+      "chunks": [
+        {
+          "address": "0xa3018a41347f3220366aa467a2b99eed7bdea1c8",
+          "transactionHash": "0xd8f3df539a89875c3e5132c79cb6ed04a07bdebecf7c748bd38d87766f175b9f",
+          "block": 25936585,
+          "payloadBytes": 661
+        }
+      ]
+    },
+    {
+      "path": "index.css",
+      "contentType": "text/css; charset=utf-8",
+      "bytes": 5521,
+      "keccak256": "0x46890c55fc010d0cbc6fe7851cb1ff53c14b1abaa1ddd3a81c97c1d6dc019719",
+      "chunks": [
+        {
+          "address": "0xaba2c11fc2a3d30bd9cdf76253844c57c139506e",
+          "transactionHash": "0x5e0a834cadbd05ccb3e2047dc2db98857a95e977f4650560c1f857d1d4cf7646",
+          "block": 25936586,
+          "payloadBytes": 5521
+        }
+      ]
+    },
+    {
+      "path": "app.js",
+      "contentType": "text/javascript; charset=utf-8",
+      "bytes": 63525,
+      "keccak256": "0x04d1f263ea798d7df89dd06b74b8da6d0a10a67a96f953b94da410e9309dccf5",
+      "chunks": [
+        {
+          "address": "0x70566f16b7ac1c0cd94eafb057169d6caf5ded2b",
+          "transactionHash": "0x08601adc0b4a6877d6350159ac8cfde6bd43a58903d1f438be6e667d93139cfc",
+          "block": 25936587,
+          "payloadBytes": 24000
+        },
+        {
+          "address": "0xc6495227365ec56cac967b280e42e062883b630c",
+          "transactionHash": "0x59cc4c60ba42133b715aabe49908d3dc3e2ffe9d7b230500583209992c10b1d5",
+          "block": 25936588,
+          "payloadBytes": 24000
+        },
+        {
+          "address": "0xa00157a681ea3b87cc0a7be67b87f7c90ea62db4",
+          "transactionHash": "0x0b786e15e5b00f60d8b86479bdf89cfab8f9ce53f52d6ace67b9b9dac22793b3",
+          "block": 25936589,
+          "payloadBytes": 15525
+        }
+      ]
+    },
+    {
+      "path": "rolldown-runtime.js",
+      "contentType": "text/javascript; charset=utf-8",
+      "bytes": 716,
+      "keccak256": "0x7de63044a95dcac21b8884ab40985883e687488e6e2abfd5770266e2c537cfb2",
+      "chunks": [
+        {
+          "address": "0x8e340d94abbc1f38745b3ffbf0568a2c011208cf",
+          "transactionHash": "0x1f4f411e9cfcc2448d8cdd65951deec56806989fc9ab64b9576611a458ef783e",
+          "block": 25936590,
+          "payloadBytes": 716
+        }
+      ]
+    },
+    {
+      "path": "peer-record.js",
+      "contentType": "text/javascript; charset=utf-8",
+      "bytes": 132713,
+      "keccak256": "0xe69fcbeb747bf15edf524ec758d6340157a4460ac14ff0a7fcf77b84e1eb2529",
+      "chunks": [
+        {
+          "address": "0x059635cc5c16083d2b6c2d6379e40a3780e589d6",
+          "transactionHash": "0xdfc885c38d5d3f0746470ea48eecf8c4b3ea172bacfbf10a006f7ec2da2bfd06",
+          "block": 25936591,
+          "payloadBytes": 24000
+        },
+        {
+          "address": "0xceb09dba1872a07e5d82cdf4df252df4420ad10a",
+          "transactionHash": "0xc4467840db732cd6765fe59251efd73857d71d6b2ad5861048a481c04df58893",
+          "block": 25936592,
+          "payloadBytes": 24000
+        },
+        {
+          "address": "0x2cfd0ff617b0d3ceedab78ef783122e773c8edc1",
+          "transactionHash": "0x94f800283966c037e3c1a359c5b11bddfc17e94464cd61c4f3c9c0702aa2c149",
+          "block": 25936593,
+          "payloadBytes": 24000
+        },
+        {
+          "address": "0x0ffe481a6d04a0cbf6fb5891f17979e1e2a8ae51",
+          "transactionHash": "0xd5cb645736b9b9c3a1f257e7d376fcb25f1f6e80aad792715734d9f63c37a456",
+          "block": 25936594,
+          "payloadBytes": 24000
+        },
+        {
+          "address": "0x9e932760c948d09d4c02a386887b37377cb85460",
+          "transactionHash": "0x61e56065fcc91dee9aaae4d53acf65574a1b6e74df65130172439980393c09df",
+          "block": 25936595,
+          "payloadBytes": 24000
+        },
+        {
+          "address": "0x38ae771c6153ac41e3829aa795d0bbf75bb60adc",
+          "transactionHash": "0xce90bc457a2fd9b3197971839d15e6b3e83077bac5c6942829ea805976d6345b",
+          "block": 25936596,
+          "payloadBytes": 12713
+        }
+      ]
+    },
+    {
+      "path": "peer-probe.js",
+      "contentType": "text/javascript; charset=utf-8",
+      "bytes": 291090,
+      "keccak256": "0xd52f2b97fec863c83fdffce1ad05e338e95a762e81cab8bacd99437c421ada7a",
+      "chunks": [
+        {
+          "address": "0xdb490a00fd1de273e82a12fbbaa9eac328d7c8ec",
+          "transactionHash": "0xd122f2ec17379e282da8d2c4d2b9430a1b01a96bb8975dad2030fe9f3fb6e9af",
+          "block": 25936597,
+          "payloadBytes": 24000
+        },
+        {
+          "address": "0x9862e3fca8654922b96f772c7ea1f0a8fa5853af",
+          "transactionHash": "0x2d14008803c816cffdca5f03f802de4ce6ac533439f466c2acd5a5e8692a1524",
+          "block": 25936598,
+          "payloadBytes": 24000
+        },
+        {
+          "address": "0x816095efc8d7ea80dcb5fd48d3639ab1a8a73ea3",
+          "transactionHash": "0xd8401f8ef0346415ae4352f30786fd7e0f3354dd7dda4c57e56f3ab769125674",
+          "block": 25936599,
+          "payloadBytes": 24000
+        },
+        {
+          "address": "0x39caa55da0d24de9a4c3675ae1c696d258d47854",
+          "transactionHash": "0x2ddae2a0883b385b4b96ee582a0870c886ba46f1f9670cb5e1c10c6ca7a49909",
+          "block": 25936600,
+          "payloadBytes": 24000
+        },
+        {
+          "address": "0x5bf2786b16aab97a25bf36024e2a302caf78f45f",
+          "transactionHash": "0x6e91abff36aa778213303e529192a9365dbefd2f92af8c743fa68a4fa12a9619",
+          "block": 25936601,
+          "payloadBytes": 24000
+        },
+        {
+          "address": "0xdfde55779da28f3657d88143113d77b444cbd32d",
+          "transactionHash": "0x2f481c10c4d08a9e2d46435b61250287367f58d881822a3f927a81b09523a2c8",
+          "block": 25936602,
+          "payloadBytes": 24000
+        },
+        {
+          "address": "0x7cda636334d36a7f42fda1bf701f29eab9101a69",
+          "transactionHash": "0x70048693d2a81263bf0ac349bb05ae17b28dbda77784c76449488b50d68345b5",
+          "block": 25936603,
+          "payloadBytes": 24000
+        },
+        {
+          "address": "0x0f7180c0955c541483b97028885ad100afdfcdda",
+          "transactionHash": "0x77b455f18d98e866db03e3fe2e75eae26f0dda2c8b1788fe42740a15898ff27b",
+          "block": 25936604,
+          "payloadBytes": 24000
+        },
+        {
+          "address": "0xad1107664c170688cb5226141f64272191d6e056",
+          "transactionHash": "0x2ccf0e15fb0e594fd532ab4f7671b4bbbdcdd264f2c8de06f595810b5415c4f3",
+          "block": 25936605,
+          "payloadBytes": 24000
+        },
+        {
+          "address": "0x11b1df01f23000894ba3d9ce8c9866da5a516755",
+          "transactionHash": "0xd012cc7f620909c9b193c935e4bf6b859cf4379c1a9b999be9672f4eb7146cf3",
+          "block": 25936606,
+          "payloadBytes": 24000
+        },
+        {
+          "address": "0xe2e0cda7353a7806ef644ec04c778613a955fa95",
+          "transactionHash": "0xf428eda0c11a578b7c626aa28921780ec996b700ad0d7e65ad1ba094090bc98b",
+          "block": 25936607,
+          "payloadBytes": 24000
+        },
+        {
+          "address": "0x42dbff87f19d84f237e1aba0242b88548b8afa8b",
+          "transactionHash": "0xd1d503fea960cfdf528518c14ae3683320e243c9fe0262daebf56d2482123f2f",
+          "block": 25936608,
+          "payloadBytes": 24000
+        },
+        {
+          "address": "0xcea7a193e998620e2406fe9e94526b7fba17d1ba",
+          "transactionHash": "0x461cc7fa1573cdb5653e6beb45b85ee2804fd58001efdbf7f90c39bfdd39f2ea",
+          "block": 25936609,
+          "payloadBytes": 3090
+        }
+      ]
+    }
+  ]
+}

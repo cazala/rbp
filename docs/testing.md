@@ -21,7 +21,7 @@ forge test --root contracts -vv
 FOUNDRY_PROFILE=ci forge test --root contracts -vv
 ```
 
-The default suite contains example, fuzz, and stateful invariant tests. The CI profile raises fuzz runs and invariant depth. Assertions cover exact constants and event expiry, every input boundary, permissionless callers, lack of admin selectors, and absence of mutable storage.
+The default suite contains example, fuzz, stateful invariant, immutable bytecode-storage, and ERC-5219 router tests. The CI profile raises fuzz runs and invariant depth. Registry assertions cover exact constants and event expiry, every input boundary, permissionless callers, lack of admin selectors, and absence of mutable storage. Site assertions cover single- and multi-chunk resources, root routing, headers, binary and empty bodies, missing and nested paths, constructor shape checks, manifest identity, the `5219` resolve mode, and immutability.
 
 The fork suite is safe to run without a credential—it skips live-state assertions when `MAINNET_RPC_URL` is empty. With a URL it creates a real-state fork, deploys a new registry, announces from an unrelated address, and rechecks permissionless/stateless behavior. It also checks the published Ethereum mainnet deployment block, runtime-bytecode hash, constants, and empty storage:
 
@@ -91,7 +91,8 @@ The script runs prerequisite suites, deploys the exact registry to a fresh Anvil
 4. All processes stop; unrelated D/E identities and payer accounts reboot despite stale unreachable records.
 5. A Rust WebSocket listener and JavaScript client complete authenticated peer
    verification, identify, and ping.
-6. F/G start simultaneously under a fresh namespace, both announce, and a connection forms.
+6. The exact production explorer artifact is deployed behind a fresh ERC-5219 router, then every response body and metadata record is compared byte-for-byte.
+7. F/G start simultaneously under a fresh namespace, both announce, and a connection forms.
 
 The test uses private endpoints only under an explicit local-test flag. It has bounded waits and captures per-node logs/status on failure. CI uploads `artifacts/implementer-checklist.json` even when the job fails.
 
@@ -103,14 +104,14 @@ Ports default to Anvil `18545` and node TCP `42001` through `42007`; do not run 
 scripts/check-packages.sh
 ```
 
-This compares canonical contract sources and deployment manifests, validates the public ABI and pinned Ethereum metadata, creates all four crates.io archives, and packs both npm packages. It detects missing package content, invalid metadata, dependency version drift, and unintended source or deployment-record divergence before publication.
+This compares both canonical contract sources and both Ethereum deployment manifests with their package mirrors, validates both public ABIs and pinned metadata, creates all four crates.io archives, and packs both npm packages. It detects missing package content, invalid metadata, dependency version drift, and unintended source or deployment-record divergence before publication.
 
 ## CI job map
 
 | Job | Purpose |
 |---|---|
 | `rust` | formatting, strict lint, unit/integration tests, docs |
-| `contracts` | formatting, high-run fuzz/invariant tests, sizes, source parity |
+| `contracts` | registry and immutable-site formatting, high-run fuzz/invariant/unit tests, sizes, source/deployment parity |
 | `browser` | two supported Node versions, client/explorer types, build, unit tests |
 | `packages` | every publishable archive can be constructed |
 | `fork` | optional real-state suite |

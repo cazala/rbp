@@ -1,4 +1,4 @@
-# Registry deployments
+# Ethereum deployments
 
 ## Reference Ethereum mainnet deployment
 
@@ -31,6 +31,27 @@ Deployment verification established all of the following:
 - the deployer has no owner, upgrade, pause, allowlist, withdrawal, or namespace authority.
 
 The deployment is a convenient shared log contract, not a canonical peer list or control plane. Applications still choose their own namespace and signed-record codecs. Users still choose their own RPC provider. Any account may publish under any namespace, and clients treat every event as untrusted until its signed peer record and application handshake are verified.
+
+## Immutable explorer deployment
+
+The production Resurrect explorer is also stored entirely on Ethereum. This is a separate ERC-5219 content contract; it is not a registry and applications do not place it in a network descriptor.
+
+| Field | Value |
+|---|---|
+| Network | Ethereum mainnet, chain ID `1` |
+| Router | `0xb69aF08877a0C417169135D6710Bca4840CCCdE1` |
+| Deployment block | `25936611` |
+| Deployment time | `2026-09-09T01:44:35Z` |
+| Transaction | `0x79f6fe3d1871d574d2e6e3201a08e7c1a36878648401af6f9ba597729ef88b78` |
+| Deployer | `0x318027A00a3A3eB6A7d6F45C832e47c126B4F2C2` |
+| Runtime bytecode hash | `0x4e8268e3d86eea86e5b2a4b376d240273a25bee5b1d76cade546375ad6a181bf` |
+| Resource manifest hash | `0xd23db1c25fef981cc403b978336a1795c0f891ac5f1f942c4ef4b33c15c33c02` |
+| Source | commit `5f167abf8a4d5cac38b8f56dd22f9ab236cd4c62` |
+| Storage | 494,226 bytes in 25 immutable data contracts plus one router |
+
+Inspect the [router on Etherscan](https://etherscan.io/address/0xb69aF08877a0C417169135D6710Bca4840CCCdE1), its [deployment transaction](https://etherscan.io/tx/0x79f6fe3d1871d574d2e6e3201a08e7c1a36878648401af6f9ba597729ef88b78), or the live deployment through [w3eth](https://0xb69af08877a0c417169135d6710bca4840cccde1.w3eth.io/) and [w3link](https://0xb69af08877a0c417169135d6710bca4840cccde1.1.w3link.io/). The complete machine-readable record is [`deployments/ethereum-mainnet-explorer.json`](../deployments/ethereum-mainnet-explorer.json) and is exported by `@resurrect-protocol/contracts/deployments/ethereum-mainnet-explorer.json`.
+
+Verification reconstructed all six resources from mainnet and compared every byte with the production artifact. Both gateways served all imported resources exactly, and the final w3eth page discovered and authenticated the live seed and completed identify and ping. See [Onchain explorer](onchain-explorer.md) for hashes, architecture, reproduction commands, and trust boundaries; see [ENS onchain explorer](ens-onchain-explorer.md) for the `resurrect.cazala.eth` record update.
 
 ## Reference descriptor
 

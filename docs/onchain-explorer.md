@@ -1,75 +1,103 @@
 # Onchain explorer
 
-The Resurrect explorer is intentionally packaged so a version can later be served from Ethereum through an [ERC-5219 contract resource resolver](https://eips.ethereum.org/EIPS/eip-5219) and reached through an ERC-4804/Web3 URL gateway. Cloudflare Pages remains the current distribution path; it is not part of the protocol.
+The production Resurrect explorer is permanently stored on Ethereum mainnet behind an immutable [ERC-5219](https://eips.ethereum.org/EIPS/eip-5219) resource router. Cloudflare Pages remains a convenient conventional mirror; neither distribution path is part of the Resurrect protocol.
 
-## Current artifact
+## Live deployment
 
-Run:
+| Field | Value |
+|---|---|
+| Network | Ethereum mainnet, chain ID `1` |
+| Router | `0xb69aF08877a0C417169135D6710Bca4840CCCdE1` |
+| Router block | `25936611` |
+| First data-contract block | `25936585` |
+| Deployment time | `2026-09-09T01:44:35Z` |
+| Router transaction | `0x79f6fe3d1871d574d2e6e3201a08e7c1a36878648401af6f9ba597729ef88b78` |
+| Source commit | `5f167abf8a4d5cac38b8f56dd22f9ab236cd4c62` |
+| Explorer artifact commit | `dff3cc44087a4c3b1931aef9d5beb9f6c3bed73c` |
+| Router runtime hash | `0x4e8268e3d86eea86e5b2a4b376d240273a25bee5b1d76cade546375ad6a181bf` |
+| Manifest hash | `0xd23db1c25fef981cc403b978336a1795c0f891ac5f1f942c4ef4b33c15c33c02` |
+| Deployment cost | `0.006929689171978036 ETH`, `110247127` gas |
+
+Open the address through:
+
+- native ERC-4804: `web3://0xb69aF08877a0C417169135D6710Bca4840CCCdE1:1/`;
+- [w3eth](https://0xb69af08877a0c417169135d6710bca4840cccde1.w3eth.io/); or
+- [w3link](https://0xb69af08877a0c417169135d6710bca4840cccde1.1.w3link.io/).
+
+The router and transaction are also visible on [Etherscan](https://etherscan.io/address/0xb69aF08877a0C417169135D6710Bca4840CCCdE1). The complete authoritative record—including every chunk address, transaction, block, payload length, and file hash—is [`deployments/ethereum-mainnet-explorer.json`](../deployments/ethereum-mainnet-explorer.json). It is published as `@resurrect-protocol/contracts/deployments/ethereum-mainnet-explorer.json`.
+
+## Artifact and storage layout
+
+The deployment contains 494,226 resource bytes: one immutable router and 25 immutable data contracts across 26 confirmed transactions. Each data contract stores up to 24,000 payload bytes in runtime bytecode after a one-byte `STOP` sentinel. The router holds only immutable path metadata and chunk addresses, reconstructing a response with `EXTCODECOPY`. It has no owner, mutable storage, proxy, upgrade, or withdrawal path.
+
+| Path | Content type | Bytes | Chunks | Keccak-256 |
+|---|---:|---:|---:|---|
+| `/`, `/index.html` | `text/html; charset=utf-8` | 661 | 1 | `0xb11742d9a343d4d8ca148ef1592a8cdbb470752fd60e596b8b3a329c7cd3e213` |
+| `/index.css` | `text/css; charset=utf-8` | 5,521 | 1 | `0x46890c55fc010d0cbc6fe7851cb1ff53c14b1abaa1ddd3a81c97c1d6dc019719` |
+| `/app.js` | `text/javascript; charset=utf-8` | 63,525 | 3 | `0x04d1f263ea798d7df89dd06b74b8da6d0a10a67a96f953b94da410e9309dccf5` |
+| `/rolldown-runtime.js` | `text/javascript; charset=utf-8` | 716 | 1 | `0x7de63044a95dcac21b8884ab40985883e687488e6e2abfd5770266e2c537cfb2` |
+| `/peer-record.js` | `text/javascript; charset=utf-8` | 132,713 | 6 | `0xe69fcbeb747bf15edf524ec758d6340157a4460ac14ff0a7fcf77b84e1eb2529` |
+| `/peer-probe.js` | `text/javascript; charset=utf-8` | 291,090 | 13 | `0xd52f2b97fec863c83fdffce1ad05e338e95a762e81cab8bacd99437c421ada7a` |
+
+The manifest hash is `keccak256(abi.encode(paths, contentTypes, resourceHashes))` in the fixed order shown above. The production build uses relative URLs, deterministic filenames, no source maps, and no fonts, images, analytics, indexer, private API, RPC credential, or wallet account request. Registry decoding loads with discovery; the larger libp2p/Noise probe loads only after `Ping` is selected.
+
+`ResurrectOnchainSite.request` implements ERC-5219 and returns immutable cache headers, correct MIME types, and `404` for unknown or nested resources. `resolveMode()` returns the bytes32 value `"5219"` for the draft [ERC-6944](https://eips.ethereum.org/EIPS/eip-6944) bridge used by current ERC-4804 gateways. ERC-4804 and ERC-5219 are final; ERC-6944 remains a draft, so each intended gateway must be tested independently.
+
+## Verification performed
+
+The final mainnet deployment passed all of these checks:
+
+- `resolveMode`, `manifestHash`, response status, MIME, immutable cache header, resource metadata, and `404` behavior were read from Ethereum;
+- all 494,226 application bytes returned by the router matched `apps/explorer/dist` byte-for-byte;
+- w3eth and w3link returned every CSS and JavaScript asset with exact bytes and correct content types;
+- the w3eth page loaded with no browser console errors;
+- Scan found the live seed through registry events; and
+- Ping authenticated the recovered peer through Noise, ran identify, and completed standard libp2p ping over `/dns4/resurrect-ws.caza.la/tcp/443/wss`.
+
+The tested peer was `12D3KooWRFAprLu4b2RQzq9PWJ2sTYSYuCYA9yDJNEF5kFPYh7B6`; the observed gateway run completed connection in 1,950 ms and ping in 306 ms. These timings are observations, not service guarantees.
+
+HTTP ERC-4804 gateways may inject a compatibility shim into the returned HTML, so their root document is larger than the immutable 661-byte source. The imported resource bodies remained exact. Gateway injection, caching, observation, or omission is part of the gateway trust boundary; use a native client backed by a trusted Ethereum provider for the strongest verification path.
+
+## Reproduce locally
+
+Build and enforce the artifact budget:
 
 ```bash
+corepack enable
+pnpm install --frozen-lockfile
 pnpm --filter @resurrect-protocol/explorer run build
 pnpm --filter @resurrect-protocol/explorer run check:size
+forge test --root contracts --match-contract ResurrectOnchainSiteTest -vv
 ```
 
-The production build:
+Deploy to an already-running local Anvil chain using a funded local test key:
 
-- uses only relative URLs;
-- emits deterministic resource names instead of content-hashed paths;
-- omits source maps;
-- has no font, image, analytics, indexer, or private API dependency;
-- loads registry decoding with the discovery client and defers the libp2p/Noise probe until `Ping` is selected; and
-- is capped in CI at 525,000 raw bytes and 160,000 gzip bytes across all resources.
+```bash
+DEPLOYER_PRIVATE_KEY=0x... forge script \
+  --root contracts \
+  contracts/script/DeployResurrectExplorer.s.sol:DeployResurrectExplorer \
+  --rpc-url http://127.0.0.1:8545 \
+  --broadcast
+```
 
-The exact byte count is printed by `check:size`; CI fails if it crosses either budget. Text and CSS are deliberately small, but most bytes are cryptography, libp2p, Noise, Yamux, identify, ping, and signed-record decoding. Removing explanatory copy alone cannot materially reduce that protocol payload.
+Then verify all resources against the local build:
 
-## Recommended resource layout
+```bash
+scripts/verify-onchain-explorer.sh \
+  http://127.0.0.1:8545 \
+  0xYOUR_LOCAL_ROUTER
+```
 
-Use a versioned, immutable resource deployment. An ERC-5219 router should return these build outputs with their correct content types:
+`scripts/checklist-integration.sh` performs that deployment and reconstruction automatically on a fresh Anvil chain before running the full multi-process Resurrect checklist.
 
-| Path | Content type | Load phase |
-|---|---|---|
-| `/` and `/index.html` | `text/html; charset=utf-8` | initial |
-| `/index.css` | `text/css; charset=utf-8` | initial |
-| `/app.js` | `text/javascript; charset=utf-8` | initial |
-| `/peer-record.js` | `text/javascript; charset=utf-8` | discovery |
-| `/rolldown-runtime.js` | `text/javascript; charset=utf-8` | shared runtime |
-| `/peer-probe.js` | `text/javascript; charset=utf-8` | first ping only |
+## Publishing a new immutable version
 
-The router should implement the ERC-5219 `request` interface and the ERC-6944 `resolveMode()` value `"5219"`. ERC-4804 and ERC-5219 are final; the ERC-6944 resolve-mode bridge, ERC-7617 chunking, and ERC-7618 content-encoding extensions are currently drafts. Test actual gateway behavior before relying on draft chunking or Brotli/gzip decoding.
+An onchain release cannot be patched. Build and test a reviewed commit, deploy every resource and a new router, reconstruct every file through a caller-selected mainnet provider, test intended gateways and authenticated ping, then add a new immutable deployment manifest. Preserve prior addresses and hashes. Update the ENS address record to the new router only after verification; never introduce a mutable owner or proxy merely to reuse the old address.
 
-Ethereum contract code is limited in size, so the resolver should keep only its path table and immutable resource pointers in the routing contract. Store large byte sequences across immutable data contracts or another audited bytecode-storage primitive. Do not concatenate the complete application in a stateful storage mapping: deployment gas is much higher and accidental mutation weakens the permanence claim.
-
-ERC-5219 also permits `message/external-body` responses pointing to IPFS. That is dramatically cheaper, but it is an offchain-content deployment. Use it only as an explicit alternative; it does not meet a strict requirement that every application byte be present on Ethereum.
-
-## ENS and gateway rollout
-
-For `resurrect.cazala.eth`:
-
-1. Deploy a versioned resource router from the exact release artifact and record every resource hash.
-2. Rebuild locally and compare the complete artifact hash set with the deployed bytes.
-3. Point the ENS subname at the resource contract using the resolver configuration required by the selected ERC-4804 client.
-4. Test the native `web3://` URL and each intended HTTP gateway independently. At minimum verify `/`, every module import, content types, CORS access to the selected Ethereum RPC, injected-wallet discovery, and WSS ping.
-5. Keep the prior contract address and artifact hashes documented. Upgrade the ENS pointer to a new immutable deployment rather than modifying a published version.
-
-Gateway URLs are convenience transports and may observe, cache, omit, or alter responses unless the client verifies Ethereum state itself. A local ERC-4804 client backed by a light client provides a stronger verification path than a public HTTP gateway.
+See [ENS onchain explorer](ens-onchain-explorer.md) for the exact `resurrect.cazala.eth` update and verification procedure.
 
 ## Discovery without an indexer
 
-The explorer does not need an archive node. Ethereum permits at most one execution block per 12-second slot, so 90 days contains at most 648,000 execution blocks. The explorer scans 650,000 blocks, including safety margin, directly with topic-filtered `eth_getLogs` requests of at most 10,000 blocks each. The canonical contract is newer than that window today, so scanning starts at its deployment block.
+The explorer does not require an archive node. Ethereum permits at most one execution block per 12-second slot, so 90 days contains at most 648,000 execution blocks. The explorer scans 650,000 blocks, including safety margin, using topic-filtered `eth_getLogs` requests of at most 10,000 blocks. The canonical registry is newer than that window today, so scanning begins at its deployment block.
 
-This avoids the historical `eth_getBlockByNumber` calls that some free RPCs time out or classify as premium history. It also retains Resurrect's recovery property: a static copy can discover peers from Ethereum without depending on a Resurrect-operated server.
-
-The hosted interface automatically tries an ordered, source-visible set of public Ethereum RPCs. It shows the provider currently being queried and falls through on any incomplete scan. A custom RPC field and read-only injected-wallet path remain hidden until every default fails. This improves availability without making any provider authoritative: each successful result is still decoded and cryptographically validated by the browser client.
-
-An HTTP index can be added later as an optional accelerator, but it must never be the only path. An index can omit events and is unavailable if its operator or domain disappears. Bloom filters do not remove the need for an RPC query; `eth_getLogs` already uses the node's indexed receipts and bloom data. Publishing seed announcements more often also does not shorten the safe scan window while 90-day records remain valid, and it increases gas and duplicate logs.
-
-## Release gate
-
-Before an onchain deployment:
-
-- all explorer and cross-runtime Rust-to-browser tests must pass;
-- `check:size` must pass on the release build;
-- the output must contain no source maps, absolute asset paths, secrets, or RPC credentials;
-- all resources must be reproducibly hashed and compared after deployment;
-- the resolver interface and MIME behavior must be tested against the target gateways; and
-- discovery and authenticated ping must be repeated from the final ENS/gateway origin.
+The interface automatically tries an ordered, source-visible set of public Ethereum RPCs and displays the provider currently being queried. A custom RPC field and read-only injected-wallet path appear only after every default fails. Each successful result is still decoded and cryptographically validated locally. An optional index could accelerate discovery but must never become the only recovery path. Bloom filters do not avoid an RPC query—`eth_getLogs` already uses indexed receipts and bloom data—and more frequent seed announcements do not shorten the safe scan window while records remain valid.

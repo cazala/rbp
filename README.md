@@ -9,6 +9,7 @@ The repository contains a complete reference implementation of [`docs/spec.md`](
 - a native Tokio/rust-libp2p seed and light-node process;
 - a browser/static TypeScript registry client;
 - a static browser explorer that authenticates WSS peers and measures live ping;
+- an immutable ERC-5219 deployment of that explorer on Ethereum;
 - canonical contract source and ABI packages;
 - deterministic cross-language vectors; and
 - unit, fuzz, invariant, fork, reboot, simultaneous-reboot, and packaging tests.
@@ -32,7 +33,7 @@ Resurrect does not recover lost application data, define application membership,
 
 | Path | Purpose | Release artifact |
 |---|---|---|
-| `contracts/` | Canonical Foundry project and registry tests | source via `@resurrect-protocol/contracts` |
+| `contracts/` | Canonical Foundry project, registry, immutable-site router, and tests | source via `@resurrect-protocol/contracts` |
 | `crates/resurrect-core` | descriptors, namespaces, validation, bounded candidates | `resurrect-core` |
 | `crates/resurrect-ethereum` | Alloy provider, scanner, publisher ABI | `resurrect-ethereum` |
 | `crates/resurrect-libp2p` | EIP-778 ENR and libp2p signed-record codecs | `resurrect-libp2p` |
@@ -74,7 +75,7 @@ Run the full implementer-checklist integration test with Anvil:
 scripts/checklist-integration.sh
 ```
 
-It deploys a fresh registry and proves empty-network self-promotion, Resurrect-only discovery, authenticated libp2p dialing, native discovery without registry access, total shutdown and unrelated-operator reboot, and simultaneous reboot. The machine-readable result is written to `artifacts/implementer-checklist.json`.
+It deploys a fresh registry and a complete immutable explorer, verifies every explorer byte through ERC-5219, and proves empty-network self-promotion, Resurrect-only discovery, authenticated libp2p dialing, native discovery without registry access, total shutdown and unrelated-operator reboot, and simultaneous reboot. The machine-readable result is written to `artifacts/implementer-checklist.json`.
 
 See [Testing](docs/testing.md) for suite boundaries and [Conformance](docs/conformance.md) for the checklist mapping.
 
@@ -201,11 +202,15 @@ Discovery never invokes `eth_requestAccounts`. The client verifies the chain and
 
 The package returns signed, validated dial candidates; the host application still owns its browser transport and authenticated application handshake. The repository's [hosted explorer](https://resurrect.caza.la) is a minimal reference host: it scans the canonical namespace, completes an authenticated libp2p WSS/Noise/Yamux connection, checks the remote peer ID, runs identify, and measures a standard libp2p ping. See [Browser client](docs/browser-client.md).
 
+The exact same production artifact is permanently stored on Ethereum behind the immutable ERC-5219 router [`0xb69aF08877a0C417169135D6710Bca4840CCCdE1`](https://etherscan.io/address/0xb69aF08877a0C417169135D6710Bca4840CCCdE1). Open it through [w3eth](https://0xb69af08877a0c417169135d6710bca4840cccde1.w3eth.io/) or [w3link](https://0xb69af08877a0c417169135d6710bca4840cccde1.1.w3link.io/), or use `web3://0xb69aF08877a0C417169135D6710Bca4840CCCdE1:1/` with a native ERC-4804 client. Deployment hashes and reconstruction evidence are recorded in [Onchain explorer](docs/onchain-explorer.md).
+
 ## Contract
 
 `ResurrectRegistryV1` has exactly four public function selectors: `VERSION()`, `MAX_TTL()`, `MAX_RECORD_BYTES()`, and `announce(bytes32,uint32,uint32,bytes)`. It has no owner, storage-backed peer set, upgrade, pause, allowlist, withdrawal, or namespace administrator.
 
 The canonical source is [`contracts/src/ResurrectRegistryV1.sol`](contracts/src/ResurrectRegistryV1.sol). CI requires its npm package mirror to be byte-for-byte identical. The reference Ethereum mainnet deployment is `0x6F33c332e8251dcd307D85A27fCcAbd85d578910` at block `25882327`; its runtime bytecode exactly matches the tagged local build and its source is publicly verified. Applications should independently reproduce that verification or pin another exact deployment.
+
+`ResurrectOnchainSite` is a separate immutable content router. It serves the six production explorer resources from 25 bytecode-storage contracts, implements ERC-5219, and advertises the ERC-6944 resolve mode `5219`. It has no owner, mutable storage, or upgrade path. The router source, ABI, and complete Ethereum deployment manifest are exported by `@resurrect-protocol/contracts`; see [Deployments](docs/deployments.md) and the [ENS setup guide](docs/ens-onchain-explorer.md).
 
 ## Security
 
@@ -239,4 +244,4 @@ The protocol specification is a draft. The implementation is conformance-oriente
 
 ## Contributing and license
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Rust and TypeScript code is available under MIT or Apache-2.0 at your option. The canonical registry contract is CC0-1.0 as declared in its source. Dependency licenses remain their own.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Rust, TypeScript, and the immutable-site contract are available under MIT or Apache-2.0 at your option. The canonical registry contract is CC0-1.0 as declared in its source. Dependency licenses remain their own.

@@ -159,8 +159,11 @@ RESURRECT_NODE_BIN="${NODE_BIN}" RESURRECT_TEST_WS_PORT=42008 \
   pnpm --filter @resurrect-protocol/explorer run test -- rust-interop.test.ts
 
 cmp contracts/src/ResurrectRegistryV1.sol packages/contracts/src/ResurrectRegistryV1.sol
+cmp contracts/src/ResurrectOnchainSite.sol packages/contracts/src/ResurrectOnchainSite.sol
 cmp deployments/ethereum-mainnet.json packages/contracts/deployments/ethereum-mainnet.json
+cmp deployments/ethereum-mainnet-explorer.json packages/contracts/deployments/ethereum-mainnet-explorer.json
 node -e "JSON.parse(require('node:fs').readFileSync('packages/contracts/abi/ResurrectRegistryV1.json'))"
+node -e "JSON.parse(require('node:fs').readFileSync('packages/contracts/abi/ResurrectOnchainSite.json'))"
 
 "${ANVIL_BIN}" --port "${RPC_PORT}" --chain-id 31337 --silent \
   >"${WORK_DIRECTORY}/anvil.log" 2>&1 &

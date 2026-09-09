@@ -35,5 +35,6 @@ Additional required-test evidence from section 24:
 | dead records and continuing discovery | stale A/B records precede unrelated D/E live records; bounded connector tests |
 | spam/candidate cap | core candidate-store and scanner cap tests |
 | browser provider/privacy/endpoints | TypeScript provider, scanner, record, explorer, and Rust-interoperability suites |
+| immutable browser distribution | fresh ERC-5219 deployment plus byte-for-byte verification of all six production resources |
 
-The output artifact contains one boolean for every checklist claim plus the temporary registry address. A false claim or missing artifact fails CI. This is reference-implementation evidence, not a third-party audit or proof about an external deployment.
+The output artifact contains one boolean for every checklist claim plus the temporary registry and onchain-explorer router addresses. A false claim or missing artifact fails CI. This is reference-implementation evidence, not a third-party audit or proof about an external deployment.

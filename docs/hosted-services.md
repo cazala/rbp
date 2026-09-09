@@ -10,6 +10,7 @@ their own namespace, RPC provider, seed, DNS name, TLS edge, and UI.
 | Component | Public endpoint | Role |
 |---|---|---|
 | Explorer | [https://resurrect.caza.la](https://resurrect.caza.la) | static discovery and authenticated peer probe |
+| Onchain explorer | [w3eth address gateway](https://0xb69af08877a0c417169135d6710bca4840cccde1.w3eth.io/) | immutable Ethereum copy of the production explorer |
 | Native seed | `/dns4/resurrect-seed.caza.la/tcp/4001` | direct rust-libp2p TCP/Noise/Yamux |
 | Browser seed | `/dns4/resurrect-ws.caza.la/tcp/443/wss` | WSS/Noise/Yamux through Cloudflare Tunnel |
 
@@ -69,6 +70,8 @@ Place them in the `explorer-production` GitHub Environment or as repository
 secrets. Environment protection rules can require approval before production
 deployment. DNS and Tunnel administration are not required by routine Pages
 deployments after the one-time setup.
+
+The same production artifact is independently stored behind immutable ERC-5219 router `0xb69aF08877a0C417169135D6710Bca4840CCCdE1`. Routine Pages deployments do not change that contract. Publishing a new onchain version requires a new manual deployment and verification record; ENS can then point `resurrect.cazala.eth` at the new router. See [Onchain explorer](onchain-explorer.md) and [ENS onchain explorer](ens-onchain-explorer.md).
 
 ## Upgrade procedure
 

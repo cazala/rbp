@@ -38,6 +38,8 @@ jobs:
       - run: FOUNDRY_PROFILE=ci forge test --root contracts -vv
       - run: forge build --root contracts --sizes
       - run: cmp contracts/src/ResurrectRegistryV1.sol packages/contracts/src/ResurrectRegistryV1.sol
+      - run: cmp contracts/src/ResurrectOnchainSite.sol packages/contracts/src/ResurrectOnchainSite.sol
+      - run: cmp deployments/ethereum-mainnet-explorer.json packages/contracts/deployments/ethereum-mainnet-explorer.json
 
   browser:
     strategy:

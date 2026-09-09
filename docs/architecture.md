@@ -94,6 +94,8 @@ key because the browser compares the Noise-authenticated peer ID with the
 signed registry record. It can still deny, delay, or observe traffic. Neither
 the tunnel nor the hosted explorer is required by the protocol.
 
+The explorer has two independent distribution paths: Cloudflare Pages and an immutable ERC-5219 router whose resources reside in Ethereum contract bytecode. Both run the same client-side discovery and peer-authentication logic. An HTTP ERC-4804 gateway is a convenience and adds its own observation, caching, and response-transformation boundary; the onchain resource hashes and direct contract responses remain independently verifiable.
+
 ## Persistent and ephemeral state
 
 The contract stores no mutable state. Local SQLite rows are a disposable performance cache and contain the raw signed record plus observation metadata. Every row is cryptographically decoded and checked for expiry again on load. A corrupt, stale, or attacker-modified cache therefore cannot bypass record validation.

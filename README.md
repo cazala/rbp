@@ -202,7 +202,7 @@ Discovery never invokes `eth_requestAccounts`. The client verifies the chain and
 
 The package returns signed, validated dial candidates; the host application still owns its browser transport and authenticated application handshake. The repository's [hosted explorer](https://resurrect.caza.la) is a minimal reference host: it scans the canonical namespace, completes an authenticated libp2p WSS/Noise/Yamux connection, checks the remote peer ID, runs identify, and measures a standard libp2p ping. See [Browser client](docs/browser-client.md).
 
-The exact same production artifact is permanently stored on Ethereum behind the immutable ERC-5219 router [`0xb69aF08877a0C417169135D6710Bca4840CCCdE1`](https://etherscan.io/address/0xb69aF08877a0C417169135D6710Bca4840CCCdE1). Open it through [w3eth](https://0xb69af08877a0c417169135d6710bca4840cccde1.w3eth.io/) or [w3link](https://0xb69af08877a0c417169135d6710bca4840cccde1.1.w3link.io/), or use `web3://0xb69aF08877a0C417169135D6710Bca4840CCCdE1:1/` with a native ERC-4804 client. Deployment hashes and reconstruction evidence are recorded in [Onchain explorer](docs/onchain-explorer.md).
+The exact same production artifact is permanently stored on Ethereum behind the immutable, [source-verified ERC-5219 router](https://etherscan.io/address/0xb69aF08877a0C417169135D6710Bca4840CCCdE1#code) `0xb69aF08877a0C417169135D6710Bca4840CCCdE1`. Open it through [w3eth](https://0xb69af08877a0c417169135d6710bca4840cccde1.w3eth.io/) or [w3link](https://0xb69af08877a0c417169135d6710bca4840cccde1.1.w3link.io/), or use `web3://0xb69aF08877a0C417169135D6710Bca4840CCCdE1:1/` with a native ERC-4804 client. Deployment hashes and reconstruction evidence are recorded in [Onchain explorer](docs/onchain-explorer.md).
 
 ## Contract
 

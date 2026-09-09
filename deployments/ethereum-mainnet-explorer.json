@@ -53,6 +53,27 @@
     "status": "pending-address-record"
   },
   "verification": {
+    "sourceCode": {
+      "etherscan": {
+        "status": "pass",
+        "url": "https://etherscan.io/address/0xb69aF08877a0C417169135D6710Bca4840CCCdE1#code",
+        "contractName": "ResurrectOnchainSite",
+        "compilerVersion": "v0.8.24+commit.e11b9ed9",
+        "optimizer": true,
+        "optimizerRuns": 20000,
+        "proxy": false
+      },
+      "sourcify": {
+        "status": "pass",
+        "url": "https://repo.sourcify.dev/1/0xb69aF08877a0C417169135D6710Bca4840CCCdE1",
+        "apiUrl": "https://sourcify.dev/server/v2/contract/1/0xb69aF08877a0C417169135D6710Bca4840CCCdE1?fields=all",
+        "match": "match",
+        "creationMatch": "match",
+        "runtimeMatch": "match",
+        "matchId": "48092080",
+        "verifiedAt": "2026-09-09T13:07:58Z"
+      }
+    },
     "ethereumRpc": {
       "status": "pass",
       "resolveMode": true,

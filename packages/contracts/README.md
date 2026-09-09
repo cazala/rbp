@@ -28,7 +28,7 @@ import explorerMainnet from '@resurrect-protocol/contracts/deployments/ethereum-
 
 Solidity tools can import `@resurrect-protocol/contracts/src/ResurrectOnchainSite.sol`. The contract implements ERC-5219 and the ERC-6944 `5219` resolve mode, reconstructing immutable resources from bytecode-storage contracts. It has no owner, mutable storage, or upgrade path.
 
-The production router is `0xb69aF08877a0C417169135D6710Bca4840CCCdE1` on Ethereum mainnet at block `25936611`. Its deployment JSON records the 25 data contracts, all 26 transaction hashes and blocks, every resource hash and payload length, the router runtime and manifest hashes, compiler settings, deployment cost, gateway URLs, and verification results.
+The source-verified production router is `0xb69aF08877a0C417169135D6710Bca4840CCCdE1` on Ethereum mainnet at block `25936611`. Its deployment JSON records the 25 data contracts, all 26 transaction hashes and blocks, every resource hash and payload length, the router runtime and manifest hashes, compiler settings, Etherscan and Sourcify verification, deployment cost, gateway URLs, and runtime verification results.
 
 Open it through:
 

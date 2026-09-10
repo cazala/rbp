@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "description": "Static browser explorer and authenticated peer probe for Resurrect",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "prebuild": "pnpm --filter @resurrect-protocol/client run build",

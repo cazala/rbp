@@ -49,8 +49,10 @@
     "ethPaid": "0.007086418126710057"
   },
   "gateways": {
-    "primary": "https://resurrect.wei.domains/",
-    "wns": "https://resurrect.wei.domains/",
+    "primary": "https://resurrect.wei.limo/",
+    "wns": "https://resurrect.wei.limo/",
+    "weiLimo": "https://resurrect.wei.limo/",
+    "weiDomains": "https://resurrect.wei.domains/",
     "web3Name": "web3://resurrect.wei/",
     "web3": "web3://0x14765f12a7f068EDf42dF4920fd5170ADBa73306:1/",
     "w3eth": "https://0x14765f12a7f068edf42df4920fd5170adba73306.w3eth.io/",
@@ -62,7 +64,7 @@
     "contract": "0x0000000000696760E15f265e828DB644A0c242EB",
     "tokenId": "41087391431831184440468199834649177938136395864233436476895591760904781888274",
     "tokenIdHex": "0x5ad6a3b22580f32032bc963e77903e6c2d7baa9199d605fa31cc1613dd98fb12",
-    "owner": "0x6E4a6b178Fea5FA7cE3051615C49F26b177E74F0",
+    "owner": "0x3107af70F278D3824f9BaB4222b3361A545356C2",
     "resolvedAddress": "0x14765f12a7f068EDf42dF4920fd5170ADBa73306",
     "contentcontract": "eth:0x14765f12a7f068EDf42dF4920fd5170ADBa73306",
     "contenthash": "0x",
@@ -89,6 +91,12 @@
       "setContentcontract": {
         "hash": "0x45d0cd803dd6e04f623d42e2cb5519f954fd0ec958a52a7b8cd37b57fec98674",
         "block": 25946904
+      },
+      "transferOwnership": {
+        "hash": "0x3c8ee9a2452daab45ab1030a6abaea5a6b4296f5360388e91ca7820205d4fd8d",
+        "block": 25948245,
+        "from": "0x6E4a6b178Fea5FA7cE3051615C49F26b177E74F0",
+        "to": "0x3107af70F278D3824f9BaB4222b3361A545356C2"
       }
     }
   },
@@ -131,6 +139,13 @@
     },
     "w3link": {
       "status": "pass",
+      "allAssetsByteForByte": true,
+      "rootDocumentServed": true
+    },
+    "weiLimo": {
+      "status": "pass",
+      "url": "https://resurrect.wei.limo/",
+      "nameRecordsMatchRouter": true,
       "allAssetsByteForByte": true,
       "rootDocumentServed": true
     },

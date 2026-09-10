@@ -52,7 +52,8 @@ The scanner does not create a browser libp2p node or perform an application requ
 ## Reference explorer and live probe
 
 The static reference application in `apps/explorer` is deployed at
-[resurrect.wei](https://resurrect.wei.domains/). It uses the canonical Ethereum
+[resurrect.wei](https://resurrect.wei.limo/), with
+[resurrect.wei.domains](https://resurrect.wei.domains/) as an alternative. It uses the canonical Ethereum
 deployment and the repository's demonstration namespace. The default public RPC
 is `https://rpc.mevblocker.io`; users can replace it in memory or select an injected
 wallet provider. Selecting a wallet does not connect an account, request a

@@ -9,7 +9,8 @@ their own namespace, RPC provider, seed, DNS name, TLS edge, and UI.
 
 | Component | Public endpoint | Role |
 |---|---|---|
-| Onchain explorer | [https://resurrect.wei.domains](https://resurrect.wei.domains/) | primary immutable discovery and authenticated peer probe |
+| Onchain explorer | [https://resurrect.wei.limo](https://resurrect.wei.limo/) | primary immutable discovery and authenticated peer probe |
+| Alternative name gateway | [https://resurrect.wei.domains](https://resurrect.wei.domains/) | alternative access to the same WNS name and immutable router |
 | Pages mirror | [https://resurrect.caza.la](https://resurrect.caza.la) | continuously deployed static mirror |
 | Native seed | `/dns4/resurrect-seed.caza.la/tcp/4001` | direct rust-libp2p TCP/Noise/Yamux |
 | Browser seed | `/dns4/resurrect-ws.caza.la/tcp/443/wss` | WSS/Noise/Yamux through Cloudflare Tunnel |
@@ -74,7 +75,7 @@ secrets. Environment protection rules can require approval before production
 deployment. DNS and Tunnel administration are not required by routine Pages
 deployments after the one-time setup.
 
-The production ERC-5219 deployment at `0x14765f12a7f068EDf42dF4920fd5170ADBa73306` is an immutable build that embeds the canonical Beacon. Its primary entry point is [resurrect.wei](https://resurrect.wei.domains/). Routine Pages deployments cannot update it; another onchain version requires a deliberate manual deployment and full verification before both WNS router records change. See [Onchain explorer](onchain-explorer.md) and [WNS onchain explorer](wei-onchain-explorer.md).
+The production ERC-5219 deployment at `0x14765f12a7f068EDf42dF4920fd5170ADBa73306` is an immutable build that embeds the canonical Beacon. Its primary entry point is [resurrect.wei](https://resurrect.wei.limo/), with [resurrect.wei.domains](https://resurrect.wei.domains/) as an alternative. Routine Pages deployments cannot update it; another onchain version requires a deliberate manual deployment and full verification before both WNS router records change. See [Onchain explorer](onchain-explorer.md) and [WNS onchain explorer](wei-onchain-explorer.md).
 
 ## Upgrade procedure
 
@@ -104,7 +105,7 @@ Check all layers independently:
 systemctl is-active resurrect-seed cloudflared
 ss -lntp | grep -E ':4001|:4002'
 curl --fail --silent --show-error https://resurrect.caza.la/
-curl --fail --silent --show-error https://resurrect.wei.domains/
+curl --fail --silent --show-error https://resurrect.wei.limo/
 ```
 
 A normal HTTPS request to `resurrect-ws.caza.la` is not a complete health check;

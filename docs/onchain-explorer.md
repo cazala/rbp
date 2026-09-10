@@ -20,7 +20,8 @@ The current Resurrect explorer is stored entirely on Ethereum mainnet behind an 
 
 Open the immutable application through:
 
-- [resurrect.wei](https://resurrect.wei.domains/) — primary human-readable entry point;
+- [resurrect.wei](https://resurrect.wei.limo/) — primary human-readable entry point;
+- [resurrect.wei.domains](https://resurrect.wei.domains/) — alternative name gateway;
 - native name URL: `web3://resurrect.wei/`;
 - native ERC-4804: `web3://0x14765f12a7f068EDf42dF4920fd5170ADBa73306:1/`;
 - [w3eth](https://0x14765f12a7f068edf42df4920fd5170adba73306.w3eth.io/); or
@@ -56,7 +57,7 @@ The deployment passed these checks:
 - Etherscan accepted the pinned source and compiler settings;
 - Sourcify independently matched creation and runtime bytecode; and
 - `resurrect.wei` resolved to the router with a matching ERC-6821 `contentcontract` record and empty contenthash;
-- the WNS gateway rendered the explorer and served all six resources byte-for-byte equal to the local build; and
+- the `.wei.limo` and `.wei.domains` name gateways served all six resources byte-for-byte equal to the local build; and
 - w3eth and w3link served the root document and every imported CSS and JavaScript resource, with every imported resource byte-for-byte equal to the local build.
 
 The browser interoperability suite separately proves signed-record validation, Noise peer authentication, identify, and standard libp2p ping. A release operator should also perform a manual Scan/Ping check through the intended gateway before changing ENS.

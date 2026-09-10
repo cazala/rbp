@@ -2,7 +2,7 @@
   "name": "@resurrect-protocol/contracts",
   "version": "0.4.0",
   "description": "Canonical immutable Solidity contracts, ABIs, and Ethereum deployments for Resurrect",
-  "license": "CC0-1.0 AND (MIT OR Apache-2.0)",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cazala/resurrect.git",

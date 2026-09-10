@@ -1,21 +1,23 @@
 # WNS onchain explorer
 
 The primary human-readable entry point for the immutable explorer is
-[`resurrect.wei`](https://resurrect.wei.domains/), registered through the
-[Wei Name Service](https://wei.domains/) on Ethereum mainnet. WNS resolves the
-name to the ERC-5219 router and its gateway serves the router's resources
-directly from Ethereum.
+[`resurrect.wei`](https://resurrect.wei.limo/), registered through the
+[Wei Name Service](https://wei.domains/) on Ethereum mainnet.
+[`resurrect.wei.domains`](https://resurrect.wei.domains/) is an alternative
+gateway for the same name. Both resolve the WNS records and serve the ERC-5219
+router's resources directly from Ethereum.
 
 ## Registration
 
 | Field | Value |
 |---|---|
 | Name | `resurrect.wei` |
-| Gateway | `https://resurrect.wei.domains/` |
+| Primary gateway | `https://resurrect.wei.limo/` |
+| Alternative gateway | `https://resurrect.wei.domains/` |
 | Native URL | `web3://resurrect.wei/` |
 | WNS contract | `0x0000000000696760E15f265e828DB644A0c242EB` |
 | WNS token ID | `0x5ad6a3b22580f32032bc963e77903e6c2d7baa9199d605fa31cc1613dd98fb12` |
-| Owner | `0x6E4a6b178Fea5FA7cE3051615C49F26b177E74F0` |
+| Owner | `cazala.eth` (`0x3107af70F278D3824f9BaB4222b3361A545356C2`) |
 | Resolved address | `0x14765f12a7f068EDf42dF4920fd5170ADBa73306` |
 | `contentcontract` | `eth:0x14765f12a7f068EDf42dF4920fd5170ADBa73306` |
 | Contenthash | empty (`0x`) |
@@ -27,7 +29,8 @@ directly from Ethereum.
 
 The WNS contract uses a 60-second commit–reveal registration. The commitment
 was bound directly to the owner address; no shared router or relayer was used.
-The four confirmed transactions were:
+The registration and configuration used four confirmed transactions. Ownership
+was then transferred to `cazala.eth`:
 
 | Operation | Block | Transaction |
 |---|---:|---|
@@ -35,11 +38,12 @@ The four confirmed transactions were:
 | Reveal and register | `25946901` | [`0x010cce…9c4`](https://etherscan.io/tx/0x010cce17ac09ea0a1deda110993d904e5af402217fe954439636866a9dad79c4) |
 | Set resolved address | `25946902` | [`0x420f90…e09f`](https://etherscan.io/tx/0x420f900ae42dfa456770c5334694de467d81e3f804fd3d6c58db92f549f3e09f) |
 | Set `contentcontract` | `25946904` | [`0x45d0cd…8674`](https://etherscan.io/tx/0x45d0cd803dd6e04f623d42e2cb5519f954fd0ec958a52a7b8cd37b57fec98674) |
+| Transfer ownership to `cazala.eth` | `25948245` | [`0x3c8ee9…fd8d`](https://etherscan.io/tx/0x3c8ee9a2452daab45ab1030a6abaea5a6b4296f5360388e91ca7820205d4fd8d) |
 
 The resolved address and the ERC-6821 record intentionally agree. The empty
 contenthash prevents an IPFS record from taking precedence over the
-contract-hosted application. Name ownership remains with the operational
-wallet; the immutable router has no owner or management interface.
+contract-hosted application. Name ownership belongs to `cazala.eth`; the
+immutable router has no owner or management interface.
 
 ## Verification
 
@@ -65,19 +69,19 @@ cast call "$WNS" 'expiresAt(uint256)(uint256)' "$TOKEN_ID" \
   --rpc-url https://YOUR_ETHEREUM_RPC
 ```
 
-Expected records are the owner, router, `eth:`-prefixed router, empty bytes, and
-Unix timestamp `1820578247`, respectively. The repository also verified that
-the WNS gateway returns the root document and all five imported CSS/JavaScript
-assets byte-for-byte equal to `apps/explorer/dist`. A real browser loaded the
-application with the expected title, namespace controls, Scan action, contract
-link, and source link.
+Expected records are the `cazala.eth` owner address, router, `eth:`-prefixed
+router, empty bytes, and Unix timestamp `1820578247`, respectively. The
+repository also verified that both name gateways return the root document and
+all five imported CSS/JavaScript assets byte-for-byte equal to
+`apps/explorer/dist`. A real browser loaded the application with the expected
+title, namespace controls, Scan action, contract link, and source link.
 
-The WNS gateway is still an offchain HTTP transport: it can cache, observe,
+Each name gateway is still an offchain HTTP transport: it can cache, observe,
 omit, or modify responses. The name record, router bytecode, and resource data
 remain independently readable from Ethereum. Use the address-based
 [w3eth](https://0x14765f12a7f068edf42df4920fd5170adba73306.w3eth.io/)
 or [w3link](https://0x14765f12a7f068edf42df4920fd5170adba73306.1.w3link.io/)
-gateway if the WNS gateway is unavailable, and compare returned assets with the
+gateway if both name gateways are unavailable, and compare returned assets with the
 hashes in the deployment manifest.
 
 ## Renewal and future versions

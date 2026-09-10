@@ -13,7 +13,8 @@ Its production build is still published automatically: after a successful
 push-triggered CI run for `main`, `deploy-explorer.yml` uploads the exact tested
 commit to Cloudflare Pages project `resurrect`, served at
 [resurrect.caza.la](https://resurrect.caza.la). This is a conventional mirror;
-the canonical immutable release is [resurrect.wei](https://resurrect.wei.domains/).
+the canonical immutable release is [resurrect.wei](https://resurrect.wei.limo/),
+with [resurrect.wei.domains](https://resurrect.wei.domains/) as an alternative gateway.
 
 The canonical beacon and immutable-site Solidity sources, both ABIs, and both machine-readable Ethereum deployment manifests are distributed by npm rather than a separate contract binary channel. Rust and TypeScript packages expose the beacon address/block through typed descriptor constants and constructors; packaging tests fail if any contract source or deployment record drifts.
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
 import { ResurrectBytecodeStorage, ResurrectOnchainSite } from "../src/ResurrectOnchainSite.sol";

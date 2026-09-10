@@ -1,6 +1,6 @@
 # Resurrect Explorer
 
-The production explorer is stored on Ethereum and opened through [resurrect.wei](https://resurrect.wei.domains/). Its source is this directory; it has no server-side application or private API. Cloudflare Pages serves a continuously deployed conventional mirror.
+The production explorer is stored on Ethereum and opened through [resurrect.wei](https://resurrect.wei.limo/), with [resurrect.wei.domains](https://resurrect.wei.domains/) as an alternative gateway. Its source is this directory; it has no server-side application or private API. Cloudflare Pages serves a continuously deployed conventional mirror.
 
 The explorer is a small static browser application built on `@resurrect-protocol/client`. It separates two different claims:
 

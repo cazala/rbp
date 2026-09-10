@@ -13,6 +13,11 @@ All notable changes are documented here. The project follows Semantic Versioning
 
 ### Changed
 
+- Project maturity is now Production and all Resurrect-authored source code and
+  documentation use the MIT License.
+- `https://resurrect.wei.limo/` is the primary human-readable onchain explorer;
+  `https://resurrect.wei.domains/` remains an alternative gateway for the same
+  WNS name and immutable router.
 - The canonical Ethereum descriptor, native node, browser client, explorer, deployment manifest, and contracts package now use the source-verified and audited `ResurrectBeaconV1` deployment at `0x136c191B5e6541532E42Ecd7C719C29D7ecdf468`.
 - `ResurrectBeaconV1` is now the sole rendezvous contract source and ABI shipped by `@resurrect-protocol/contracts`.
 - The explorer now uses a compact single-screen interface, deterministic

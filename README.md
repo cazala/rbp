@@ -40,7 +40,7 @@ Resurrect does not recover lost application data, define application membership,
 | `crates/resurrect-node` | native libp2p host, SQLite cache, supervisor, CLI | `resurrect-node` crate and binaries |
 | `packages/ts` | browser/static provider and registry scanner | `@resurrect-protocol/client` |
 | `packages/contracts` | canonical Solidity source and ABI | `@resurrect-protocol/contracts` |
-| `apps/explorer` | browser discovery, authenticated WSS dial, identify, and ping UI | [resurrect.wei](https://resurrect.wei.domains/) |
+| `apps/explorer` | browser discovery, authenticated WSS dial, identify, and ping UI | [resurrect.wei](https://resurrect.wei.limo/) |
 | `test-vectors/` | deterministic Rust/TypeScript interoperability data | repository data |
 | `scripts/` | conformance, packaging, and release automation | CI tooling |
 
@@ -200,9 +200,9 @@ const { candidates } = await client.scan({
 
 Discovery never invokes `eth_requestAccounts`. The client verifies the chain and contract constants before scanning, searches only the recent TTL window, validates libp2p signed envelopes, and retains secure browser-capable endpoints. The Ethereum block lookback avoids historical state and block-body access; it uses bounded `eth_getLogs` calls and does not require an archive node. RPC URLs remain in memory unless the application explicitly calls `persistJsonRpcUrl`.
 
-The package returns signed, validated dial candidates; the host application still owns its browser transport and authenticated application handshake. The repository's [onchain explorer](https://resurrect.wei.domains/) is a minimal reference host: it scans the canonical namespace, completes an authenticated libp2p WSS/Noise/Yamux connection, checks the remote peer ID, runs identify, and measures a standard libp2p ping. See [Browser client](docs/browser-client.md).
+The package returns signed, validated dial candidates; the host application still owns its browser transport and authenticated application handshake. The repository's [onchain explorer](https://resurrect.wei.limo/) is a minimal reference host: it scans the canonical namespace, completes an authenticated libp2p WSS/Noise/Yamux connection, checks the remote peer ID, runs identify, and measures a standard libp2p ping. See [Browser client](docs/browser-client.md).
 
-The explorer is permanently stored on Ethereum behind the immutable, [source-verified ERC-5219 router](https://etherscan.io/address/0x14765f12a7f068EDf42dF4920fd5170ADBa73306#code) `0x14765f12a7f068EDf42dF4920fd5170ADBa73306`. The registered WNS name `resurrect.wei` resolves to that router and publishes its ERC-6821 `contentcontract` record, making [resurrect.wei.domains](https://resurrect.wei.domains/) the primary onchain entry point. Address-based [w3eth](https://0x14765f12a7f068edf42df4920fd5170adba73306.w3eth.io/) and [w3link](https://0x14765f12a7f068edf42df4920fd5170adba73306.1.w3link.io/) URLs remain independent fallbacks. Deployment hashes and byte-for-byte reconstruction evidence are recorded in [Onchain explorer](docs/onchain-explorer.md).
+The explorer is permanently stored on Ethereum behind the immutable, [source-verified ERC-5219 router](https://etherscan.io/address/0x14765f12a7f068EDf42dF4920fd5170ADBa73306#code) `0x14765f12a7f068EDf42dF4920fd5170ADBa73306`. The registered WNS name `resurrect.wei` resolves to that router and publishes its ERC-6821 `contentcontract` record, making [resurrect.wei.limo](https://resurrect.wei.limo/) the primary onchain entry point. [resurrect.wei.domains](https://resurrect.wei.domains/) is an alternative name gateway; address-based [w3eth](https://0x14765f12a7f068edf42df4920fd5170adba73306.w3eth.io/) and [w3link](https://0x14765f12a7f068edf42df4920fd5170adba73306.1.w3link.io/) URLs remain independent fallbacks. Deployment hashes and byte-for-byte reconstruction evidence are recorded in [Onchain explorer](docs/onchain-explorer.md).
 
 ## Contract
 
@@ -236,15 +236,15 @@ All publishable artifacts are released by one CI workflow:
 The private explorer application is not a registry package. After the same
 `main` CI run succeeds, a separate workflow deploys its tested static build to
 a Cloudflare Pages mirror. The canonical onchain release remains the immutable
-build at [resurrect.wei.domains](https://resurrect.wei.domains/); publishing a
+build at [resurrect.wei.limo](https://resurrect.wei.limo/); publishing a
 new Pages build does not alter the onchain router or WNS records.
 
 The release pipeline runs tests before publication and publishes dependency crates in topological order with registry propagation retries. See [Releasing](docs/releasing.md).
 
 ## Project status
 
-The protocol specification is a draft and the implementation is conformance-oriented and comprehensively tested. `ResurrectBeaconV1` at `0x136c191B5e6541532E42Ecd7C719C29D7ecdf468` was reviewed through OneDollarAudit; read the [report and maintainer disposition](docs/audits.md). That review is scoped to the 37-line deployed contract, not the Rust, TypeScript, node, explorer, peer-record codecs, or application handshake. Production users should review those components, key handling, and chain/RPC assumptions for their threat model.
+**Status: Production.** Resurrect v1 and its reference implementation are conformance-oriented and comprehensively tested. `ResurrectBeaconV1` at `0x136c191B5e6541532E42Ecd7C719C29D7ecdf468` was reviewed through OneDollarAudit; read the [report and maintainer disposition](docs/audits.md). That review is scoped to the 37-line deployed contract, not the Rust, TypeScript, node, explorer, peer-record codecs, or application handshake. Production users should review those components, key handling, and chain/RPC assumptions for their threat model.
 
 ## Contributing and license
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Rust, TypeScript, and the immutable-site contract are available under MIT or Apache-2.0 at your option. The registry and beacon contracts are CC0-1.0 as declared in their sources. Dependency licenses remain their own.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Resurrect's original source code and documentation are licensed under the [MIT License](LICENSE). Dependency licenses remain their own.

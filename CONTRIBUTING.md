@@ -48,4 +48,4 @@ A change to registry semantics, descriptor fields, namespace derivation, assigne
 
 Keep commits focused by feature, test, documentation, or fix. Explain threat-model and liveness effects in the pull request. Reviewers should be able to map every normative behavior to code and tests. Releases are produced only by the documented CI workflow.
 
-By contributing, you agree that contributions are licensed under the repository's applicable license: MIT or Apache-2.0 for Rust/TypeScript/tooling and CC0-1.0 for canonical registry contributions marked as such.
+By contributing, you agree that your contributions are licensed under the repository's [MIT License](LICENSE).

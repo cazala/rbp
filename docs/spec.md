@@ -1,9 +1,12 @@
 # Resurrect v1
 
-**Status:** Draft implementation specification  
-**Version:** 1  
-**Scope:** Generic, application-independent P2P cold-start and network-resurrection protocol  
-**Primary anchor:** Ethereum / EVM event logs  
+**Status:** Production implementation specification
+
+**Version:** 1
+
+**Scope:** Generic, application-independent P2P cold-start and network-resurrection protocol
+
+**Primary anchor:** Ethereum / EVM event logs
 
 ## 1. Abstract
 
@@ -267,7 +270,7 @@ References:
 A conforming v1 registry MUST expose semantics equivalent to:
 
 ```solidity
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
 contract ResurrectBeaconV1 {

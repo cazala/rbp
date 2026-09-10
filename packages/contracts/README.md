@@ -34,7 +34,8 @@ The source-verified production router is `0x14765f12a7f068EDf42dF4920fd5170ADBa7
 
 Open it through:
 
-- `https://resurrect.wei.domains/` — primary human-readable entry point;
+- `https://resurrect.wei.limo/` — primary human-readable entry point;
+- `https://resurrect.wei.domains/` — alternative name gateway;
 - `web3://resurrect.wei/`;
 - `web3://0x14765f12a7f068EDf42dF4920fd5170ADBa73306:1/`;
 - `https://0x14765f12a7f068edf42df4920fd5170adba73306.w3eth.io/`; or
@@ -48,4 +49,4 @@ Consumers should independently compare deployed code and resources with the pinn
 
 ## License
 
-`ResurrectBeaconV1.sol` is CC0-1.0. `ResurrectOnchainSite.sol` is available under MIT or Apache-2.0 at your option. Deployment metadata and dependency licenses remain their own.
+Resurrect's original source and deployment metadata are licensed under MIT. Dependency licenses remain their own.

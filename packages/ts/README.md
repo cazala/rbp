@@ -105,4 +105,4 @@ Resurrect discovery is not application authorization. After dialing, authenticat
 
 RPC results and registry events are untrusted. Keep log, candidate, endpoint, and dial limits bounded. Permit provider replacement. Do not infer trust from the transaction sender or registry ordering. See the repository [security model](https://github.com/cazala/resurrect/blob/main/docs/security.md) and specification for the complete threat model.
 
-Licensed under [MIT](https://opensource.org/license/mit) or [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0) at your option.
+Licensed under the [MIT License](https://opensource.org/license/mit).

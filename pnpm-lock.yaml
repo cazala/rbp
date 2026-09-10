@@ -17,8 +17,6 @@ importers:
         specifier: 4.128.0
         version: 4.128.0
 
-  apps/beacon-deployer: {}
-
   apps/explorer:
     dependencies:
       '@chainsafe/libp2p-noise':

@@ -23,7 +23,7 @@ Embed or ship the descriptor with application releases. Pin the chain ID, contra
 
 Use JSON integers within the safe-integer range for the portable descriptor form. Both reference implementations accept canonical unsigned decimal strings for larger chain IDs and deployment blocks; the Rust serializer emits that form when necessary. Both parsers enforce the on-chain `uint256` chain-ID and `uint64` block-number widths. Unknown fields, duplicate codecs, wrong constants, and malformed addresses/namespaces are rejected.
 
-For the published Ethereum mainnet deployment, Rust applications can call `NetworkDescriptor::ethereum_mainnet(namespace, accepted_record_types)`, and TypeScript applications can call `ethereumMainnetDescriptor(namespace, acceptedRecordTypes)`. These constructors pin chain ID `1`, registry `0x6F33c332e8251dcd307D85A27fCcAbd85d578910`, block `25882327`, and the v1 TTL. They intentionally do not derive the namespace, choose a provider, or add an RPC URL. See [Deployments](deployments.md) for reproducible verification evidence.
+For the published Ethereum mainnet deployment, Rust applications can call `NetworkDescriptor::ethereum_mainnet(namespace, accepted_record_types)`, and TypeScript applications can call `ethereumMainnetDescriptor(namespace, acceptedRecordTypes)`. These constructors pin chain ID `1`, beacon `0x136c191B5e6541532E42Ecd7C719C29D7ecdf468`, block `25943058`, and the v1 TTL. They intentionally do not derive the namespace, choose a provider, or add an RPC URL. See [Deployments](deployments.md) for reproducible verification and audit evidence.
 
 ## Compose the Rust libraries
 
@@ -48,11 +48,15 @@ For every candidate:
 
 Do not grant privileges based on the transaction sender, namespace presence, gas expenditure, event age, or registry ordering.
 
+For v1 standard codecs, the peer-record signature authenticates the identity and endpoints encoded by the ENR or libp2p record; it does not bind the surrounding event's namespace, record type, TTL, expiry, or transaction sender. A valid record can therefore be replayed under different event metadata. Treat expiry and recency as bounded discovery/cache hints, reject mismatched or unsupported event fields before decoding, authenticate the expected peer during transport setup, and rely on the application handshake for authorization. Applications that require cryptographic binding to Resurrect metadata should define a new application-specific signed codec rather than infer that binding from codec 1 or 2.
+
 ## Seed operation
 
 A seed should publish only after it has a stable identity and externally verified inbound reachability. The reference policy announces for seven days when rebooting an empty network, uses a 30-day healthy TTL, and renews every 14 days. Applications may tune those values below the registry maximum.
 
 When endpoints change, increment the signed-record sequence and publish immediately. Retain the same peer identity only when doing so matches the application's privacy and identity model.
+
+Avoid application behavior that depends on sub-minute TTL precision: `validUntil` is derived from the block timestamp and can inherit ordinary proposer timestamp skew.
 
 ## Browser applications
 

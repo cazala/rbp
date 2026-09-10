@@ -5,9 +5,9 @@ export const RESURRECT_VERSION = 1 as const
 export const MAX_TTL_SECONDS = 7_776_000
 export const ETHEREUM_MAINNET_CHAIN_ID = 1n
 export const ETHEREUM_MAINNET_REGISTRY_ADDRESS = getAddress(
-  '0x6F33c332e8251dcd307D85A27fCcAbd85d578910'
+  '0x136c191B5e6541532E42Ecd7C719C29D7ecdf468'
 )
-export const ETHEREUM_MAINNET_REGISTRY_DEPLOYMENT_BLOCK = 25_882_327n
+export const ETHEREUM_MAINNET_REGISTRY_DEPLOYMENT_BLOCK = 25_943_058n
 /** 90 days of 12-second slots plus confirmation and boundary margin. */
 export const ETHEREUM_MAINNET_MAX_BLOCKS_PER_TTL = 650_000n
 export const ETHEREUM_MAINNET_REGISTRY: Readonly<RegistryDescriptor> = Object.freeze({

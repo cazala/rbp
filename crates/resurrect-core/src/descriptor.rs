@@ -10,12 +10,12 @@ pub const RESURRECT_VERSION: u32 = 1;
 /// EIP-155 chain identifier of the reference Ethereum mainnet deployment.
 pub const ETHEREUM_MAINNET_CHAIN_ID: u64 = 1;
 
-/// Address of the reference `ResurrectRegistryV1` deployment on Ethereum mainnet.
+/// Address of the reference `ResurrectBeaconV1` deployment on Ethereum mainnet.
 pub const ETHEREUM_MAINNET_REGISTRY_ADDRESS: Address =
-    address!("6F33c332e8251dcd307D85A27fCcAbd85d578910");
+    address!("136c191B5e6541532E42Ecd7C719C29D7ecdf468");
 
-/// Receipt block of the reference `ResurrectRegistryV1` deployment.
-pub const ETHEREUM_MAINNET_REGISTRY_DEPLOYMENT_BLOCK: u64 = 25_882_327;
+/// Receipt block of the reference `ResurrectBeaconV1` deployment.
+pub const ETHEREUM_MAINNET_REGISTRY_DEPLOYMENT_BLOCK: u64 = 25_943_058;
 
 /// Returns the pinned reference registry deployment on Ethereum mainnet.
 #[must_use]
@@ -312,9 +312,9 @@ mod tests {
         assert_eq!(descriptor.registry.chain_id, U256::from(1));
         assert_eq!(
             descriptor.registry.address,
-            Address::from_str("0x6F33c332e8251dcd307D85A27fCcAbd85d578910").unwrap()
+            Address::from_str("0x136c191B5e6541532E42Ecd7C719C29D7ecdf468").unwrap()
         );
-        assert_eq!(descriptor.registry.deployment_block, 25_882_327);
+        assert_eq!(descriptor.registry.deployment_block, 25_943_058);
         assert_eq!(descriptor.registry.max_ttl_seconds, MAX_TTL_SECONDS);
         descriptor.validate().unwrap();
     }

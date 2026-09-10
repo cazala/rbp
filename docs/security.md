@@ -34,11 +34,21 @@ Assume an attacker can publish unlimited syntactically valid or malformed events
 
 The published Ethereum mainnet address is deployment metadata, not a trust claim about its deployer. The bytecode, constants, and receipt block are pinned and reproducible; the deployer cannot change the contract or administer namespaces. Consumers should still verify the code through independent providers and explorers.
 
+The v1 ENR and libp2p signatures authenticate the peer-record contents defined by those codecs. They do not authenticate the surrounding event's namespace, record type, TTL, expiry, transaction sender, position, or recency. A third party can replay valid record bytes with different event metadata. Treat those fields only as discovery filters and bounded cache hints, never as authorization or proof of the peer's current intent. Authenticate the peer identity again during transport setup and enforce the application's own handshake after dialing.
+
 ## Residual risks
 
 Resurrect cannot prevent a well-funded Sybil/eclipsing population, prove liveness before dialing, guarantee RPC completeness, route around EVM censorship, hide public seed endpoints, recover deleted application data, or fix a vulnerable application handshake. One available attacker-controlled peer may be the only discoverable candidate.
 
 Applications should diversify discovery sources and network prefixes, remember successful peers, rotate samples, compare providers when appropriate, and enforce authorization after transport connection. High-value deployments should operate or verify against their own Ethereum node.
+
+The contract accepts a one-second TTL, but `validUntil` is based on a block timestamp and is not a precision timer. Applications should avoid relying on sub-minute expiry precision. `ResurrectBeaconV1` also reports an empty record as `RecordTooLarge(0)`; this is an imprecise v1 diagnostic, not a bounds bypass. Callers should interpret the zero argument as an empty-record rejection.
+
+## Contract audit
+
+The source-verified `ResurrectBeaconV1` deployment at [`0x136c191B5e6541532E42Ecd7C719C29D7ecdf468`](https://etherscan.io/address/0x136c191B5e6541532E42Ecd7C719C29D7ecdf468#code) received an external AI-orchestrated review through OneDollarAudit, job [#904](https://www.onedollaraudit.com/audit/904). The [immutable IPFS report](https://bafkreid22gqqrzwo6b6scxqnmcmiinru3xzigz74xkere2573r6ivulzjq.ipfs.community.bgipfs.com/) reports no Critical, High, or Medium findings, two Low findings, and one Informational finding.
+
+The review covered only the deployed 37-line beacon contract. It did not cover the protocol specification, Rust or TypeScript packages, peer-record codecs, node, explorer, hosted services, deployment tooling, or application integrations. See [Audits](audits.md) for each finding and its disposition.
 
 ## Key handling
 
@@ -59,7 +69,7 @@ dedicated tunnel, and never place identity or payer keys at the edge.
 
 ## Supply-chain and release security
 
-CI builds locked Rust and pnpm dependency graphs, packages every public artifact, and runs conformance tests. Stable native binaries receive checksums and GitHub attestations. Consumers should verify repository/tag provenance, package publisher provenance, checksums, and their own dependency policy. A passing suite is not a substitute for an independent security audit.
+CI builds locked Rust and pnpm dependency graphs, packages every public artifact, and runs conformance tests. Stable native binaries receive checksums and GitHub attestations. Consumers should verify repository/tag provenance, package publisher provenance, checksums, their own dependency policy, and the exact scope of the [published contract audit](audits.md).
 
 ## Reporting vulnerabilities
 

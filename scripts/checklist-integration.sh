@@ -158,11 +158,11 @@ pnpm --filter @resurrect-protocol/explorer run build
 RESURRECT_NODE_BIN="${NODE_BIN}" RESURRECT_TEST_WS_PORT=42008 \
   pnpm --filter @resurrect-protocol/explorer run test -- rust-interop.test.ts
 
-cmp contracts/src/ResurrectRegistryV1.sol packages/contracts/src/ResurrectRegistryV1.sol
+cmp contracts/src/ResurrectBeaconV1.sol packages/contracts/src/ResurrectBeaconV1.sol
 cmp contracts/src/ResurrectOnchainSite.sol packages/contracts/src/ResurrectOnchainSite.sol
 cmp deployments/ethereum-mainnet.json packages/contracts/deployments/ethereum-mainnet.json
 cmp deployments/ethereum-mainnet-explorer.json packages/contracts/deployments/ethereum-mainnet-explorer.json
-node -e "JSON.parse(require('node:fs').readFileSync('packages/contracts/abi/ResurrectRegistryV1.json'))"
+node -e "JSON.parse(require('node:fs').readFileSync('packages/contracts/abi/ResurrectBeaconV1.json'))"
 node -e "JSON.parse(require('node:fs').readFileSync('packages/contracts/abi/ResurrectOnchainSite.json'))"
 
 "${ANVIL_BIN}" --port "${RPC_PORT}" --chain-id 31337 --silent \
@@ -172,7 +172,7 @@ wait_for_rpc
 
 DEPLOYMENT_JSON="$("${FORGE_BIN}" create \
   --root contracts \
-  src/ResurrectRegistryV1.sol:ResurrectRegistryV1 \
+  src/ResurrectBeaconV1.sol:ResurrectBeaconV1 \
   --rpc-url "${RPC_URL}" \
   --private-key "${ACCOUNT_A_KEY}" \
   --broadcast \
@@ -195,7 +195,7 @@ ONCHAIN_EXPLORER_ADDRESS="$(
 CAST_BIN="${CAST_BIN}" scripts/verify-onchain-explorer.sh \
   "${RPC_URL}" "${ONCHAIN_EXPLORER_ADDRESS}"
 
-METHODS_JSON="$("${FORGE_BIN}" inspect --root contracts src/ResurrectRegistryV1.sol:ResurrectRegistryV1 methodIdentifiers --json)"
+METHODS_JSON="$("${FORGE_BIN}" inspect --root contracts src/ResurrectBeaconV1.sol:ResurrectBeaconV1 methodIdentifiers --json)"
 jq -e 'keys | sort == ["MAX_RECORD_BYTES()", "MAX_TTL()", "VERSION()", "announce(bytes32,uint32,uint32,bytes)"]' \
   <<<"${METHODS_JSON}" >/dev/null
 

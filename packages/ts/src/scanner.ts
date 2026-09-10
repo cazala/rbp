@@ -1,12 +1,7 @@
 import {
   bytesToHex,
   concat,
-  decodeAbiParameters,
-  encodeFunctionData,
   keccak256,
-  parseAbi,
-  parseAbiParameters,
-  toEventSelector,
   type Hex
 } from 'viem'
 import { decodeBrowserPeerRecord } from './peer-record.js'
@@ -18,13 +13,13 @@ import type {
   ScanReport
 } from './types.js'
 
-const registryAbi = parseAbi([
-  'function VERSION() view returns (uint32)',
-  'function MAX_TTL() view returns (uint32)',
-  'function MAX_RECORD_BYTES() view returns (uint32)'
-])
-const eventTopic = toEventSelector('PeerAnnounced(bytes32,uint32,uint64,bytes)')
-const eventData = parseAbiParameters('uint64 validUntil, bytes peerRecord')
+const CONSTANT_SELECTORS = {
+  VERSION: '0xffa1ad74',
+  MAX_TTL: '0xe01b402d',
+  MAX_RECORD_BYTES: '0x9e64fef0'
+} as const satisfies Record<'VERSION' | 'MAX_TTL' | 'MAX_RECORD_BYTES', Hex>
+const PEER_ANNOUNCED_TOPIC = '0x7d1c1d3bcf95382eea4fdac25defde4e7ea513c29a4f5cb05e6c1adcc6b3b2bf'
+const UINT64_MAX = (1n << 64n) - 1n
 
 interface RpcBlock {
   number: Hex
@@ -89,7 +84,7 @@ export async function scanRegistry(
     try {
       logs = asLogs(await provider.request('eth_getLogs', [{
         address: descriptor.registry.address,
-        topics: [eventTopic, descriptor.namespace],
+        topics: [PEER_ANNOUNCED_TOPIC, descriptor.namespace],
         fromBlock: quantity(from),
         toBlock: quantity(to)
       }]))
@@ -106,10 +101,10 @@ export async function scanRegistry(
       logsProcessed += 1
       try {
         if (log.removed === true || log.address.toLowerCase() !== descriptor.registry.address.toLowerCase()) throw new Error('wrong log source')
-        if (log.topics[0]?.toLowerCase() !== eventTopic.toLowerCase() || log.topics[1]?.toLowerCase() !== descriptor.namespace.toLowerCase()) throw new Error('wrong event')
+        if (log.topics[0]?.toLowerCase() !== PEER_ANNOUNCED_TOPIC || log.topics[1]?.toLowerCase() !== descriptor.namespace.toLowerCase()) throw new Error('wrong event')
         const recordType = Number(BigInt(required(log.topics[2], 'record type topic')))
         if (!accepted.has(recordType) || recordType !== 2) throw new Error('unsupported record type')
-        const [validUntil, peerRecord] = decodeAbiParameters(eventData, log.data)
+        const [validUntil, peerRecord] = decodeAnnouncementData(log.data)
         if (validUntil <= headTimestamp) throw new Error('expired record')
         const candidate = await decodeBrowserPeerRecord(
           peerRecord,
@@ -176,8 +171,31 @@ async function readConstant(
   address: Hex,
   name: 'VERSION' | 'MAX_TTL' | 'MAX_RECORD_BYTES'
 ): Promise<bigint> {
-  const data = encodeFunctionData({ abi: registryAbi, functionName: name })
+  const data = CONSTANT_SELECTORS[name]
   return BigInt(asHex(await provider.request('eth_call', [{ to: address, data }, 'latest']), name))
+}
+
+function decodeAnnouncementData(data: Hex): [validUntil: bigint, peerRecord: Hex] {
+  const encoded = data.slice(2)
+  if (encoded.length < 192 || encoded.length % 64 !== 0 || !/^[0-9a-fA-F]+$/.test(encoded)) {
+    throw new Error('malformed announcement data')
+  }
+
+  const validUntil = BigInt(`0x${encoded.slice(0, 64)}`)
+  if (validUntil > UINT64_MAX) throw new Error('validUntil exceeds uint64')
+  const offset = BigInt(`0x${encoded.slice(64, 128)}`)
+  if (offset !== 64n) throw new Error('non-canonical peer record offset')
+  const length = BigInt(`0x${encoded.slice(128, 192)}`)
+  const availableBytes = BigInt((encoded.length - 192) / 2)
+  if (length > availableBytes) throw new Error('truncated peer record')
+
+  const payloadHexLength = Number(length) * 2
+  const payloadEnd = 192 + payloadHexLength
+  const expectedEnd = 192 + Math.ceil(Number(length) / 32) * 64
+  if (encoded.length !== expectedEnd || /[^0]/.test(encoded.slice(payloadEnd))) {
+    throw new Error('non-canonical peer record padding')
+  }
+  return [validUntil, `0x${encoded.slice(192, payloadEnd)}`]
 }
 
 async function findStartBlock(provider: RegistryProvider, deployment: bigint, head: bigint, cutoff: bigint): Promise<bigint> {

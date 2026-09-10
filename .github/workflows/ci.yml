@@ -37,8 +37,9 @@ jobs:
       - run: forge fmt --root contracts --check
       - run: FOUNDRY_PROFILE=ci forge test --root contracts -vv
       - run: forge build --root contracts --sizes
-      - run: cmp contracts/src/ResurrectRegistryV1.sol packages/contracts/src/ResurrectRegistryV1.sol
+      - run: cmp contracts/src/ResurrectBeaconV1.sol packages/contracts/src/ResurrectBeaconV1.sol
       - run: cmp contracts/src/ResurrectOnchainSite.sol packages/contracts/src/ResurrectOnchainSite.sol
+      - run: cmp deployments/ethereum-mainnet.json packages/contracts/deployments/ethereum-mainnet.json
       - run: cmp deployments/ethereum-mainnet-explorer.json packages/contracts/deployments/ethereum-mainnet-explorer.json
 
   browser:
@@ -63,6 +64,8 @@ jobs:
       - run: pnpm --filter @resurrect-protocol/explorer run build
       - run: pnpm --filter @resurrect-protocol/explorer run check:size
       - run: pnpm --filter @resurrect-protocol/explorer run test
+      - run: pnpm --filter @resurrect-protocol/beacon-deployer run check
+      - run: pnpm --filter @resurrect-protocol/beacon-deployer run test
       - run: pnpm --dir packages/contracts run test
 
   packages:
@@ -106,7 +109,7 @@ jobs:
       - name: Run optional real-state fork suite
         env:
           MAINNET_RPC_URL: ${{ secrets.MAINNET_RPC_URL }}
-        run: forge test --root contracts --match-contract ResurrectRegistryV1ForkTest -vv
+        run: forge test --root contracts --match-contract ResurrectBeaconV1ForkTest -vv
 
   implementer-checklist:
     needs: [rust, contracts, browser, packages]

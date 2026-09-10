@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import type { ScanReport } from '@resurrect-protocol/client'
+import { deriveNamespace, type ScanReport } from '@resurrect-protocol/client'
 import {
+  DEFAULT_NAMESPACE_APPLICATION,
+  DEFAULT_NAMESPACE_MAJOR_VERSION,
   DEFAULT_RPC_ENDPOINTS,
   DEFAULT_NAMESPACE,
   DEFAULT_RPC_URL,
@@ -13,6 +15,7 @@ import {
   friendlyError,
   networkDescriptor,
   normalizeRpcUrl,
+  resolveNamespace,
   scanWithRpcFallback,
   shortValue,
   summarizeScan
@@ -23,11 +26,12 @@ function report(): ScanReport {
 }
 
 describe('explorer model', () => {
-  it('pins the live namespace and canonical Ethereum deployment', () => {
+  it('derives the canonical Resurrect namespace and pins the Ethereum deployment', () => {
     const descriptor = networkDescriptor()
     expect(descriptor.namespace).toBe(DEFAULT_NAMESPACE)
+    expect(DEFAULT_NAMESPACE).toBe('0x71572bed5372559cfc007b7da8b411f2d96091816cdf057de65151b984a74e90')
     expect(descriptor.registry.chainId).toBe(1n)
-    expect(descriptor.registry.address).toBe('0x6F33c332e8251dcd307D85A27fCcAbd85d578910')
+    expect(descriptor.registry.address).toBe('0x136c191B5e6541532E42Ecd7C719C29D7ecdf468')
     expect(DEFAULT_RPC_URL).toBe('https://rpc.mevblocker.io')
     expect(DEFAULT_RPC_ENDPOINTS).toEqual([
       { name: 'MEV Blocker', url: 'https://rpc.mevblocker.io' },
@@ -39,6 +43,32 @@ describe('explorer model', () => {
     expect(LOCAL_RPC_PLACEHOLDER).toBe('http://127.0.0.1:8545')
     expect(ETHEREUM_MAX_BLOCKS_PER_TTL).toBe(650_000n)
     expect(EXPLORER_SCAN_OPTIONS).toMatchObject({ maxBlockLookback: 650_000n, initialChunkSize: 10_000n })
+  })
+
+  it('accepts readable namespace inputs and derives every namespace canonically', () => {
+    expect(resolveNamespace(DEFAULT_NAMESPACE_APPLICATION, DEFAULT_NAMESPACE_MAJOR_VERSION)).toEqual({
+      application: 'resurrect',
+      majorVersion: 1n,
+      label: 'resurrect:v1',
+      namespace: deriveNamespace('resurrect', 1n)
+    })
+
+    const custom = resolveNamespace('  example-app  ', '2')
+    expect(custom).toEqual({
+      application: 'example-app',
+      majorVersion: 2n,
+      label: 'example-app:v2',
+      namespace: deriveNamespace('example-app', 2n)
+    })
+    expect(networkDescriptor('example-app', 2n).namespace).toBe(custom.namespace)
+  })
+
+  it('rejects unreadable namespace inputs', () => {
+    expect(() => resolveNamespace('   ', '1')).toThrow(/must not be empty/)
+    expect(() => resolveNamespace('example', '-1')).toThrow(/unsigned decimal/)
+    expect(() => resolveNamespace('example', '01')).toThrow(/unsigned decimal/)
+    expect(() => resolveNamespace('example', '1.5')).toThrow(/unsigned decimal/)
+    expect(() => resolveNamespace('example', Number.MAX_SAFE_INTEGER + 1)).toThrow(/safe integer/)
   })
 
   it('tries public RPCs in order and stops on the first successful scan', async () => {

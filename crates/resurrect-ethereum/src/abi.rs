@@ -1,11 +1,11 @@
 use alloy::sol;
 
 sol! {
-    /// Canonical Resurrect registry v1 ABI.
+    /// Canonical Resurrect beacon v1 ABI.
     #[sol(rpc)]
-    interface ResurrectRegistryV1 {
-        error InvalidTTL();
-        error RecordTooLarge();
+    interface ResurrectBeaconV1 {
+        error InvalidTTL(uint32 supplied);
+        error RecordTooLarge(uint256 supplied);
 
         event PeerAnnounced(
             bytes32 indexed namespace,

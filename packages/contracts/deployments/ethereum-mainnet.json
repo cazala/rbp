@@ -1,40 +1,53 @@
 {
   "schemaVersion": 1,
-  "contract": "ResurrectRegistryV1",
+  "contract": "ResurrectBeaconV1",
   "network": "ethereum-mainnet",
   "chainId": 1,
-  "address": "0x6F33c332e8251dcd307D85A27fCcAbd85d578910",
-  "deploymentBlock": 25882327,
-  "deploymentTimestamp": "2026-09-01T12:07:23Z",
-  "transactionHash": "0x41f8b9e49265c5796c627eb8e32bd0d366f9408dfc0c75861189758f638440ab",
-  "deployer": "0x318027A00a3A3eB6A7d6F45C832e47c126B4F2C2",
-  "runtimeBytecodeHash": "0x0024244f6ad881009b5726d2c1644a3c2aff178852c4d01b1066cd7d9967c109",
+  "address": "0x136c191B5e6541532E42Ecd7C719C29D7ecdf468",
+  "deploymentBlock": 25943058,
+  "deploymentTimestamp": "2026-09-09T23:19:35Z",
+  "transactionHash": "0x8e7c2ddf815d44166d436fabd886a05bac6eab25ba5abf6faf9e93e3e179b8d6",
+  "deployer": "0x6E4a6b178Fea5FA7cE3051615C49F26b177E74F0",
+  "creationBytecodeHash": "0x449675c0d8b1c3ba38a1cd0c633ee043a9f328c14535ea04ff6d9e51845efa3a",
+  "runtimeBytecodeHash": "0x20999e7bf54d855e3bfedebfd7053d41f0c873ecde3b9d70a71ee6dcd086bce7",
   "source": {
     "repository": "https://github.com/cazala/resurrect",
-    "tag": "v0.1.0",
-    "commit": "3298158d0e86959a05434495eb28335808e7964a",
-    "path": "contracts/src/ResurrectRegistryV1.sol"
+    "path": "contracts/src/ResurrectBeaconV1.sol"
   },
   "compiler": {
     "language": "Solidity",
-    "version": "0.8.24",
+    "version": "0.8.24+commit.e11b9ed9",
     "optimizer": true,
     "optimizerRuns": 20000,
     "bytecodeHash": "none",
-    "cborMetadata": false
+    "cborMetadata": false,
+    "evmVersion": "cancun"
   },
   "verification": {
     "provider": "Sourcify",
     "status": "match",
-    "verifiedAt": "2026-09-01T12:08:54Z",
-    "url": "https://repo.sourcify.dev/1/0x6F33c332e8251dcd307D85A27fCcAbd85d578910",
-    "apiUrl": "https://sourcify.dev/server/v2/contract/1/0x6F33c332e8251dcd307D85A27fCcAbd85d578910"
+    "verifiedAt": "2026-09-09T23:24:46Z",
+    "creationMatch": "match",
+    "runtimeMatch": "match",
+    "url": "https://repo.sourcify.dev/1/0x136c191B5e6541532E42Ecd7C719C29D7ecdf468",
+    "apiUrl": "https://sourcify.dev/server/v2/contract/1/0x136c191B5e6541532E42Ecd7C719C29D7ecdf468"
   },
   "explorers": {
     "etherscan": {
       "status": "verified",
-      "verifiedAt": "2026-09-02T12:23:05Z",
-      "url": "https://etherscan.io/address/0x6F33c332e8251dcd307D85A27fCcAbd85d578910#code"
+      "url": "https://etherscan.io/address/0x136c191B5e6541532E42Ecd7C719C29D7ecdf468#code"
     }
+  },
+  "audit": {
+    "provider": "OneDollarAudit",
+    "jobId": 904,
+    "completedAt": "2026-09-10T00:24:09Z",
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 2,
+    "informational": 1,
+    "jobUrl": "https://www.onedollaraudit.com/audit/904",
+    "reportUrl": "https://bafkreid22gqqrzwo6b6scxqnmcmiinru3xzigz74xkere2573r6ivulzjq.ipfs.community.bgipfs.com/"
   }
 }

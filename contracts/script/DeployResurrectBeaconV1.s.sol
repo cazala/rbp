@@ -1,23 +1,22 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 pragma solidity 0.8.24;
 
-import { ResurrectRegistryV1 } from "../src/ResurrectRegistryV1.sol";
+import { ResurrectBeaconV1 } from "../src/ResurrectBeaconV1.sol";
 
-interface VmScript {
+interface VmBeaconScript {
     function envUint(string calldata name) external view returns (uint256);
     function startBroadcast(uint256 privateKey) external;
     function stopBroadcast() external;
 }
 
-contract DeployResurrectRegistryV1 {
-    VmScript internal constant vm =
-        VmScript(address(uint160(uint256(keccak256("hevm cheat code")))));
+contract DeployResurrectBeaconV1 {
+    VmBeaconScript internal constant vm =
+        VmBeaconScript(address(uint160(uint256(keccak256("hevm cheat code")))));
 
-    function run() external returns (ResurrectRegistryV1 registry) {
+    function run() external returns (ResurrectBeaconV1 beacon) {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
-        registry = new ResurrectRegistryV1();
+        beacon = new ResurrectBeaconV1();
         vm.stopBroadcast();
     }
 }
-

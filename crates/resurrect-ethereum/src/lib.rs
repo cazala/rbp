@@ -9,7 +9,7 @@ mod alloy_provider;
 mod provider;
 mod scanner;
 
-pub use abi::ResurrectRegistryV1;
+pub use abi::ResurrectBeaconV1;
 pub use alloy_provider::AlloyRegistryProvider;
 pub use provider::{BlockInfo, BlockReference, ProviderError, RegistryConstants, RegistryProvider};
 pub use scanner::{

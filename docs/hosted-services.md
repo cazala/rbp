@@ -10,7 +10,6 @@ their own namespace, RPC provider, seed, DNS name, TLS edge, and UI.
 | Component | Public endpoint | Role |
 |---|---|---|
 | Explorer | [https://resurrect.caza.la](https://resurrect.caza.la) | static discovery and authenticated peer probe |
-| Onchain explorer | [w3eth address gateway](https://0xb69af08877a0c417169135d6710bca4840cccde1.w3eth.io/) | immutable Ethereum copy of the production explorer |
 | Native seed | `/dns4/resurrect-seed.caza.la/tcp/4001` | direct rust-libp2p TCP/Noise/Yamux |
 | Browser seed | `/dns4/resurrect-ws.caza.la/tcp/443/wss` | WSS/Noise/Yamux through Cloudflare Tunnel |
 
@@ -18,9 +17,12 @@ Both seed endpoints terminate in the same `resurrect-node` process and therefore
 authenticate as peer
 `12D3KooWRFAprLu4b2RQzq9PWJ2sTYSYuCYA9yDJNEF5kFPYh7B6`. The record is
 announced under namespace
-`0x0c07fdd466a110bea1916247b73191c331123bbc77b010462676a10d1c3928e2`
-through the canonical Ethereum registry at
-`0x6F33c332e8251dcd307D85A27fCcAbd85d578910`.
+`0x71572bed5372559cfc007b7da8b411f2d96091816cdf057de65151b984a74e90`,
+derived from `resurrect:resurrect:1`,
+through the canonical Ethereum Beacon at
+`0x136c191B5e6541532E42Ecd7C719C29D7ecdf468`.
+
+The production service pins that chain, Beacon address, deployment block, namespace, TTL limit, and signed libp2p codec in `/etc/resurrect/network.json`, installed from [`deploy/systemd/resurrect-mainnet.json`](../deploy/systemd/resurrect-mainnet.json). This explicit descriptor lets the deployment remain pinned even while the binary is upgraded.
 
 These values are public routing and identity data. The libp2p private key,
 Ethereum payer key, provider URL, Cloudflare connector token, and CI token are
@@ -71,7 +73,7 @@ secrets. Environment protection rules can require approval before production
 deployment. DNS and Tunnel administration are not required by routine Pages
 deployments after the one-time setup.
 
-The same production artifact is independently stored behind immutable ERC-5219 router `0xb69aF08877a0C417169135D6710Bca4840CCCdE1`. Routine Pages deployments do not change that contract. Publishing a new onchain version requires a new manual deployment and verification record; ENS can then point `resurrect.cazala.eth` at the new router. See [Onchain explorer](onchain-explorer.md) and [ENS onchain explorer](ens-onchain-explorer.md).
+The production ERC-5219 deployment at `0x14765f12a7f068EDf42dF4920fd5170ADBa73306` is an immutable build that embeds the canonical Beacon. Routine Pages deployments cannot update it; another onchain version requires a deliberate manual deployment and full verification before the ENS address record changes. See [Onchain explorer](onchain-explorer.md) and [ENS onchain explorer](ens-onchain-explorer.md).
 
 ## Upgrade procedure
 

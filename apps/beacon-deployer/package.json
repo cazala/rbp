@@ -1,0 +1,16 @@
+{
+  "name": "@resurrect-protocol/beacon-deployer",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Local injected-wallet deployer for ResurrectBeaconV1",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/check-contract.mjs",
+    "check": "node scripts/check-contract.mjs",
+    "dev": "node scripts/serve.mjs",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

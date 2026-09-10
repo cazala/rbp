@@ -4,11 +4,11 @@ set -euo pipefail
 REPOSITORY_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${REPOSITORY_ROOT}"
 
-cmp contracts/src/ResurrectRegistryV1.sol packages/contracts/src/ResurrectRegistryV1.sol
+cmp contracts/src/ResurrectBeaconV1.sol packages/contracts/src/ResurrectBeaconV1.sol
 cmp contracts/src/ResurrectOnchainSite.sol packages/contracts/src/ResurrectOnchainSite.sol
 cmp deployments/ethereum-mainnet.json packages/contracts/deployments/ethereum-mainnet.json
 cmp deployments/ethereum-mainnet-explorer.json packages/contracts/deployments/ethereum-mainnet-explorer.json
-node -e "const fs=require('node:fs'); JSON.parse(fs.readFileSync('packages/contracts/abi/ResurrectRegistryV1.json')); JSON.parse(fs.readFileSync('packages/contracts/abi/ResurrectOnchainSite.json')); const deployment=JSON.parse(fs.readFileSync('deployments/ethereum-mainnet.json')); if (deployment.chainId !== 1 || deployment.address !== '0x6F33c332e8251dcd307D85A27fCcAbd85d578910' || deployment.deploymentBlock !== 25882327 || deployment.runtimeBytecodeHash !== '0x0024244f6ad881009b5726d2c1644a3c2aff178852c4d01b1066cd7d9967c109') throw new Error('canonical Ethereum deployment metadata drift'); const explorer=JSON.parse(fs.readFileSync('deployments/ethereum-mainnet-explorer.json')); if (explorer.chainId !== 1 || explorer.address !== '0xb69aF08877a0C417169135D6710Bca4840CCCdE1' || explorer.deploymentBlock !== 25936611 || explorer.manifestHash !== '0xd23db1c25fef981cc403b978336a1795c0f891ac5f1f942c4ef4b33c15c33c02' || explorer.verification.sourceCode.etherscan.status !== 'pass' || explorer.verification.sourceCode.sourcify.status !== 'pass') throw new Error('onchain explorer deployment metadata drift')"
+node -e "const fs=require('node:fs'); JSON.parse(fs.readFileSync('packages/contracts/abi/ResurrectBeaconV1.json')); JSON.parse(fs.readFileSync('packages/contracts/abi/ResurrectOnchainSite.json')); const deployment=JSON.parse(fs.readFileSync('deployments/ethereum-mainnet.json')); if (deployment.contract !== 'ResurrectBeaconV1' || deployment.chainId !== 1 || deployment.address !== '0x136c191B5e6541532E42Ecd7C719C29D7ecdf468' || deployment.deploymentBlock !== 25943058 || deployment.runtimeBytecodeHash !== '0x20999e7bf54d855e3bfedebfd7053d41f0c873ecde3b9d70a71ee6dcd086bce7' || deployment.audit?.jobId !== 904) throw new Error('canonical Ethereum deployment metadata drift'); const explorer=JSON.parse(fs.readFileSync('deployments/ethereum-mainnet-explorer.json')); if (explorer.chainId !== 1 || explorer.address !== '0x14765f12a7f068EDf42dF4920fd5170ADBa73306' || explorer.canonicalBeacon?.address !== deployment.address || explorer.canonicalBeacon?.deploymentBlock !== deployment.deploymentBlock || explorer.deploymentBlock !== 25943864 || explorer.manifestHash !== '0x36f8d8a77af7849aa040a86d4f7663ab5a185b9d72e2ab500c9db85785ddd026' || explorer.storage?.resourceBytes !== 467179 || explorer.storage?.chunkContracts !== 24 || explorer.verification.sourceCode.etherscan.status !== 'pass' || explorer.verification.sourceCode.sourcify.status !== 'pass' || explorer.verification.ethereumRpc.canonicalBeaconEmbedded !== true) throw new Error('onchain explorer deployment metadata drift')"
 
 cargo package --workspace --locked --allow-dirty --no-verify
 
@@ -23,9 +23,9 @@ test -n "${CONTRACT_ARCHIVE}"
 test -n "${CLIENT_ARCHIVE}"
 CONTRACT_LISTING="$(tar -tzf "${CONTRACT_ARCHIVE}")"
 CLIENT_LISTING="$(tar -tzf "${CLIENT_ARCHIVE}")"
-grep -qx 'package/src/ResurrectRegistryV1.sol' <<<"${CONTRACT_LISTING}"
+grep -qx 'package/src/ResurrectBeaconV1.sol' <<<"${CONTRACT_LISTING}"
 grep -qx 'package/src/ResurrectOnchainSite.sol' <<<"${CONTRACT_LISTING}"
-grep -qx 'package/abi/ResurrectRegistryV1.json' <<<"${CONTRACT_LISTING}"
+grep -qx 'package/abi/ResurrectBeaconV1.json' <<<"${CONTRACT_LISTING}"
 grep -qx 'package/abi/ResurrectOnchainSite.json' <<<"${CONTRACT_LISTING}"
 grep -qx 'package/deployments/ethereum-mainnet.json' <<<"${CONTRACT_LISTING}"
 grep -qx 'package/deployments/ethereum-mainnet-explorer.json' <<<"${CONTRACT_LISTING}"

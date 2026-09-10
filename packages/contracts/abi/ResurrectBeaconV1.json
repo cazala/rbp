@@ -43,6 +43,14 @@
     ],
     "anonymous": false
   },
-  { "type": "error", "name": "InvalidTTL", "inputs": [] },
-  { "type": "error", "name": "RecordTooLarge", "inputs": [] }
+  {
+    "type": "error",
+    "name": "InvalidTTL",
+    "inputs": [{ "name": "supplied", "type": "uint32", "internalType": "uint32" }]
+  },
+  {
+    "type": "error",
+    "name": "RecordTooLarge",
+    "inputs": [{ "name": "supplied", "type": "uint256", "internalType": "uint256" }]
+  }
 ]

@@ -1,7 +1,7 @@
 //! Cross-language conformance tests for the canonical registry event ABI.
 
 use alloy::{primitives::B256, sol_types::SolEvent};
-use resurrect_ethereum::ResurrectRegistryV1;
+use resurrect_ethereum::ResurrectBeaconV1;
 use serde::Deserialize;
 use std::str::FromStr;
 
@@ -30,20 +30,16 @@ fn alloy_decodes_shared_peer_announced_event_vector() {
     let vector = vector();
     assert_eq!(
         vector.event_signature,
-        ResurrectRegistryV1::PeerAnnounced::SIGNATURE
+        ResurrectBeaconV1::PeerAnnounced::SIGNATURE
     );
     let topics = [
         B256::from_str(&vector.topic0).unwrap(),
         B256::from_str(&vector.namespace).unwrap(),
         B256::from_str(&vector.record_type_topic).unwrap(),
     ];
-    assert_eq!(
-        topics[0],
-        ResurrectRegistryV1::PeerAnnounced::SIGNATURE_HASH
-    );
+    assert_eq!(topics[0], ResurrectBeaconV1::PeerAnnounced::SIGNATURE_HASH);
     let data = hex::decode(vector.data.trim_start_matches("0x")).unwrap();
-    let decoded =
-        ResurrectRegistryV1::PeerAnnounced::decode_raw_log_validate(topics, &data).unwrap();
+    let decoded = ResurrectBeaconV1::PeerAnnounced::decode_raw_log_validate(topics, &data).unwrap();
 
     assert_eq!(
         decoded.namespace,

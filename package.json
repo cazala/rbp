@@ -5,6 +5,7 @@
   "scripts": {
     "build": "pnpm --recursive run build",
     "check": "pnpm --recursive run check",
+    "dev:beacon-deployer": "pnpm --dir apps/beacon-deployer run dev",
     "dev:explorer": "pnpm --dir apps/explorer run dev",
     "test": "pnpm --recursive run test"
   },

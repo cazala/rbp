@@ -16,17 +16,17 @@
     "README.md"
   ],
   "exports": {
-    "./abi/ResurrectRegistryV1.json": "./abi/ResurrectRegistryV1.json",
+    "./abi/ResurrectBeaconV1.json": "./abi/ResurrectBeaconV1.json",
     "./abi/ResurrectOnchainSite.json": "./abi/ResurrectOnchainSite.json",
     "./deployments/ethereum-mainnet-explorer.json": "./deployments/ethereum-mainnet-explorer.json",
     "./deployments/ethereum-mainnet.json": "./deployments/ethereum-mainnet.json",
-    "./src/ResurrectOnchainSite.sol": "./src/ResurrectOnchainSite.sol",
-    "./src/ResurrectRegistryV1.sol": "./src/ResurrectRegistryV1.sol"
+    "./src/ResurrectBeaconV1.sol": "./src/ResurrectBeaconV1.sol",
+    "./src/ResurrectOnchainSite.sol": "./src/ResurrectOnchainSite.sol"
   },
   "scripts": {
-    "build": "node -e \"const fs=require('node:fs'); for (const file of ['abi/ResurrectRegistryV1.json','abi/ResurrectOnchainSite.json','deployments/ethereum-mainnet.json','deployments/ethereum-mainnet-explorer.json']) JSON.parse(fs.readFileSync(file))\"",
-    "check": "node -e \"const fs=require('node:fs'); for (const file of ['abi/ResurrectRegistryV1.json','abi/ResurrectOnchainSite.json','deployments/ethereum-mainnet.json','deployments/ethereum-mainnet-explorer.json']) JSON.parse(fs.readFileSync(file))\"",
-    "test": "node -e \"const fs=require('node:fs'); for (const file of ['abi/ResurrectRegistryV1.json','abi/ResurrectOnchainSite.json','deployments/ethereum-mainnet.json','deployments/ethereum-mainnet-explorer.json']) JSON.parse(fs.readFileSync(file))\""
+    "build": "node -e \"const fs=require('node:fs'); for (const file of ['abi/ResurrectBeaconV1.json','abi/ResurrectOnchainSite.json','deployments/ethereum-mainnet.json','deployments/ethereum-mainnet-explorer.json']) JSON.parse(fs.readFileSync(file))\"",
+    "check": "node -e \"const fs=require('node:fs'); for (const file of ['abi/ResurrectBeaconV1.json','abi/ResurrectOnchainSite.json','deployments/ethereum-mainnet.json','deployments/ethereum-mainnet-explorer.json']) JSON.parse(fs.readFileSync(file))\"",
+    "test": "node -e \"const fs=require('node:fs'); for (const file of ['abi/ResurrectBeaconV1.json','abi/ResurrectOnchainSite.json','deployments/ethereum-mainnet.json','deployments/ethereum-mainnet-explorer.json']) JSON.parse(fs.readFileSync(file))\""
   },
   "publishConfig": {
     "access": "public",

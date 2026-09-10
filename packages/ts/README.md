@@ -41,7 +41,7 @@ for (const candidate of report.candidates) {
 }
 ```
 
-`ethereumMainnetDescriptor` pins the published registry at `0x6F33c332e8251dcd307D85A27fCcAbd85d578910`, chain ID `1`, and deployment block `25882327`; it defaults to signed libp2p records (codec `2`). The namespace and RPC provider remain application-owned. Use `parseDescriptor` when selecting a different verified deployment or codec profile. A descriptor must never contain an RPC URL.
+`ethereumMainnetDescriptor` pins the published Beacon at `0x136c191B5e6541532E42Ecd7C719C29D7ecdf468`, chain ID `1`, and deployment block `25943058`; it defaults to signed libp2p records (codec `2`). The namespace and RPC provider remain application-owned. Use `parseDescriptor` when selecting a different verified deployment or codec profile. A descriptor must never contain an RPC URL.
 
 ## Provider behavior
 

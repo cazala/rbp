@@ -1,6 +1,6 @@
 use crate::{
     BlockInfo, BlockReference, ProviderError, RegistryConstants, RegistryProvider,
-    ResurrectRegistryV1,
+    ResurrectBeaconV1,
 };
 use alloy::{
     eips::BlockNumberOrTag,
@@ -81,7 +81,7 @@ impl RegistryProvider for AlloyRegistryProvider {
         &self,
         address: Address,
     ) -> Result<RegistryConstants, ProviderError> {
-        let contract = ResurrectRegistryV1::new(address, &self.provider);
+        let contract = ResurrectBeaconV1::new(address, &self.provider);
         let version = contract.VERSION().call().await.map_err(map_request_error)?;
         let max_ttl = contract.MAX_TTL().call().await.map_err(map_request_error)?;
         let max_record_bytes = contract
@@ -124,7 +124,7 @@ impl RegistryProvider for AlloyRegistryProvider {
     ) -> Result<Vec<Announcement>, ProviderError> {
         let filter = Filter::new()
             .address(address)
-            .event_signature(ResurrectRegistryV1::PeerAnnounced::SIGNATURE_HASH)
+            .event_signature(ResurrectBeaconV1::PeerAnnounced::SIGNATURE_HASH)
             .topic1(namespace.as_b256())
             .from_block(from_block)
             .to_block(to_block);
@@ -143,7 +143,7 @@ impl RegistryProvider for AlloyRegistryProvider {
                 let log_index = log.log_index.ok_or(ProviderError::Missing("log index"))?;
                 let block_hash = log.block_hash;
                 let decoded = log
-                    .log_decode_validate::<ResurrectRegistryV1::PeerAnnounced>()
+                    .log_decode_validate::<ResurrectBeaconV1::PeerAnnounced>()
                     .map_err(|error| ProviderError::Request(error.to_string()))?;
                 let event = decoded.data();
                 Ok(Announcement {
@@ -170,7 +170,7 @@ impl RegistryProvider for AlloyRegistryProvider {
         if !self.writable {
             return Err(ProviderError::ReadOnly);
         }
-        let contract = ResurrectRegistryV1::new(address, &self.provider);
+        let contract = ResurrectBeaconV1::new(address, &self.provider);
         let pending = contract
             .announce(
                 namespace.as_b256(),

@@ -1,0 +1,11 @@
+{
+  "resurrectVersion": 1,
+  "registry": {
+    "chainId": 1,
+    "address": "0x136c191B5e6541532E42Ecd7C719C29D7ecdf468",
+    "deploymentBlock": 25943058,
+    "maxTtlSeconds": 7776000
+  },
+  "namespace": "0x71572bed5372559cfc007b7da8b411f2d96091816cdf057de65151b984a74e90",
+  "acceptedRecordTypes": [2]
+}

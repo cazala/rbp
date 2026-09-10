@@ -27,7 +27,7 @@ The fork suite is safe to run without a credential—it skips live-state asserti
 
 ```bash
 MAINNET_RPC_URL=https://... \
-  forge test --root contracts --match-contract ResurrectRegistryV1ForkTest -vv
+  forge test --root contracts --match-contract ResurrectBeaconV1ForkTest -vv
 ```
 
 The RPC URL is supplied only at test time and is never embedded in deployment metadata or package defaults.

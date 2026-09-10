@@ -13,6 +13,8 @@ All notable changes are documented here. The project follows Semantic Versioning
 
 ### Changed
 
+- The canonical Ethereum descriptor, native node, browser client, explorer, deployment manifest, and contracts package now use the source-verified and audited `ResurrectBeaconV1` deployment at `0x136c191B5e6541532E42Ecd7C719C29D7ecdf468`.
+- `ResurrectBeaconV1` is now the sole rendezvous contract source and ABI shipped by `@resurrect-protocol/contracts`.
 - The explorer now uses a compact single-screen interface, deterministic
   relative assets, no production source maps, and a lazy-loaded libp2p probe.
 - The default public Ethereum endpoint is `https://rpc.mevblocker.io`.
@@ -63,7 +65,7 @@ All notable changes are documented here. The project follows Semantic Versioning
 
 ### Added
 
-- Immutable, stateless, permissionless `ResurrectRegistryV1` with Foundry
+- Immutable, stateless, permissionless `ResurrectBeaconV1` with Foundry
   example, fuzz, invariant, and optional fork suites.
 - Rust core, Ethereum, libp2p, and native-node crates; browser/static TypeScript
   client; canonical contracts package; and cross-language vectors.

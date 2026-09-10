@@ -17,7 +17,7 @@ forge build --root contracts
 
 - Add regression tests for behavior changes and adversarial tests for parsers, providers, codecs, endpoint policy, or resource limits.
 - Keep the descriptor strict and provider-neutral.
-- Keep `ResurrectRegistryV1` stateless, immutable, and permissionless.
+- Keep `ResurrectBeaconV1` stateless, immutable, and permissionless.
 - Treat discovery input as hostile and preserve explicit bounds.
 - Maintain Rust/TypeScript interoperability vectors when wire behavior changes.
 - Update public docs and changelog for user-visible changes.

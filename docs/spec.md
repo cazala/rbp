@@ -194,7 +194,7 @@ Fields:
 
 The descriptor is application configuration. Resurrect does not specify how a participant learns its application's descriptor.
 
-The reference implementation publishes a verified `ResurrectRegistryV1` deployment on Ethereum mainnet at `0x6F33c332e8251dcd307D85A27fCcAbd85d578910`, with deployment block `25882327`. This is a non-normative convenience: conforming applications MAY use that deployment or another contract satisfying section 8, but MUST still define their own namespace, accepted codecs, and independently supplied provider. Sharing the stateless contract does not merge namespaces or establish a global peer list.
+The reference implementation publishes a verified and audited `ResurrectBeaconV1` deployment on Ethereum mainnet at `0x136c191B5e6541532E42Ecd7C719C29D7ecdf468`, with deployment block `25943058`. This is a non-normative convenience: conforming applications MAY use that deployment or another contract satisfying section 8, but MUST still define their own namespace, accepted codecs, and independently supplied provider. Sharing the stateless contract does not merge namespaces or establish a global peer list.
 
 ### 7.1 Recommended namespace derivation
 
@@ -260,7 +260,7 @@ References:
 
 ---
 
-## 8. Registry contract
+## 8. Beacon contract
 
 ### 8.1 Required interface
 
@@ -270,13 +270,13 @@ A conforming v1 registry MUST expose semantics equivalent to:
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity ^0.8.24;
 
-contract ResurrectRegistryV1 {
+contract ResurrectBeaconV1 {
     uint32 public constant VERSION = 1;
     uint32 public constant MAX_TTL = 90 days;
     uint32 public constant MAX_RECORD_BYTES = 4096;
 
-    error InvalidTTL();
-    error RecordTooLarge();
+    error InvalidTTL(uint32 supplied);
+    error RecordTooLarge(uint256 supplied);
 
     event PeerAnnounced(
         bytes32 indexed namespace,
@@ -291,9 +291,10 @@ contract ResurrectRegistryV1 {
         uint32 ttl,
         bytes calldata peerRecord
     ) external {
-        if (ttl == 0 || ttl > MAX_TTL) revert InvalidTTL();
-        if (peerRecord.length == 0 || peerRecord.length > MAX_RECORD_BYTES) {
-            revert RecordTooLarge();
+        if (ttl == 0 || ttl > MAX_TTL) revert InvalidTTL(ttl);
+        uint256 recordLength = peerRecord.length;
+        if (recordLength == 0 || recordLength > MAX_RECORD_BYTES) {
+            revert RecordTooLarge(recordLength);
         }
 
         emit PeerAnnounced(
@@ -308,9 +309,9 @@ contract ResurrectRegistryV1 {
 
 The final deployment SHOULD use the smallest audited bytecode that preserves these semantics.
 
-### 8.2 Registry invariants
+### 8.2 Beacon invariants
 
-The canonical v1 registry MUST:
+The canonical v1 beacon MUST:
 
 - Have no owner.
 - Have no upgrade mechanism.
@@ -378,6 +379,8 @@ The `peerRecord` MUST be a self-certified libp2p peer/address record serialized 
 
 Consumers MUST verify the Signed Envelope before using embedded addresses, MUST verify that the peer ID is derived from/matches the signing key, and MUST retain only the highest valid record sequence observed for a peer.
 
+The standard ENR and libp2p signatures authenticate only the fields defined by their respective peer-record formats. They do not bind the surrounding Resurrect event's `namespace`, `recordType`, `validUntil`, TTL, transaction sender, or log position to the peer-record signer. A third party can replay valid peer-record bytes with different event metadata. Consumers MUST treat those event fields as untrusted discovery filters and cache bounds, not as authorization, proof of current signer intent, or proof of record freshness. An application profile that requires cryptographic binding to Resurrect-specific metadata MUST define and verify an appropriate signed codec or enforce the binding in its authenticated application protocol.
+
 References:
 
 - <https://github.com/libp2p/specs/blob/master/RFC/0002-signed-envelopes.md>
@@ -429,6 +432,8 @@ For every `PeerAnnounced` event, a client MUST apply the following checks before
 ```
 
 `local_chain_time` SHOULD be derived from the timestamp of the latest sufficiently confirmed registry-chain block rather than the machine wall clock when practical.
+
+`validUntil` is an advisory discovery/cache bound, not a precision timer. Consumers MUST tolerate ordinary block-proposer timestamp variation and SHOULD NOT depend on sub-minute TTL precision.
 
 A registry transaction sender has no special trust. The Ethereum account that pays to publish a peer record MAY be unrelated to the P2P identity in the record.
 
@@ -725,6 +730,8 @@ Implementations SHOULD use normal reachability techniques (AutoNAT, dial-back ch
 ### 18.1 Malicious announcements
 
 Anyone can pay Ethereum gas to publish garbage under any namespace.
+
+Anyone can also replay a previously observed valid peer record under another namespace, record type, or TTL because the v1 standard peer-record signatures do not cover the surrounding event fields. Such a replay does not transfer control of the signed peer identity, but it can keep stale endpoints visible as discovery candidates or add noise to a namespace.
 
 Therefore:
 
@@ -1138,7 +1145,7 @@ A browser/static implementation claiming rebootable Resurrect discovery conforma
 
 Implementers SHOULD create deterministic tests for at least the following.
 
-### 24.1 Registry contract
+### 24.1 Beacon contract
 
 - `ttl == 0` reverts.
 - `ttl > MAX_TTL` reverts.

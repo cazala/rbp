@@ -1,5 +1,6 @@
 import {
   ETHEREUM_MAINNET_MAX_BLOCKS_PER_TTL,
+  deriveNamespace,
   ethereumMainnetDescriptor,
   type NetworkDescriptor,
   type ScanOptions,
@@ -20,7 +21,12 @@ export const DEFAULT_RPC_ENDPOINTS = [
 ] as const satisfies readonly PublicRpcEndpoint[]
 export const DEFAULT_RPC_URL = DEFAULT_RPC_ENDPOINTS[0].url
 export const LOCAL_RPC_PLACEHOLDER = 'http://127.0.0.1:8545'
-export const DEFAULT_NAMESPACE = '0x0c07fdd466a110bea1916247b73191c331123bbc77b010462676a10d1c3928e2'
+export const DEFAULT_NAMESPACE_APPLICATION = 'resurrect'
+export const DEFAULT_NAMESPACE_MAJOR_VERSION = '1'
+export const DEFAULT_NAMESPACE = deriveNamespace(
+  DEFAULT_NAMESPACE_APPLICATION,
+  BigInt(DEFAULT_NAMESPACE_MAJOR_VERSION)
+)
 
 export const ETHEREUM_MAX_BLOCKS_PER_TTL = ETHEREUM_MAINNET_MAX_BLOCKS_PER_TTL
 export const EXPLORER_SCAN_OPTIONS: Readonly<ScanOptions> = {
@@ -46,6 +52,13 @@ export interface RpcAttemptFailure {
   error: unknown
 }
 
+export interface NamespaceSelection {
+  application: string
+  majorVersion: bigint
+  label: string
+  namespace: `0x${string}`
+}
+
 export class DefaultRpcEndpointsError extends Error {
   readonly failures: readonly RpcAttemptFailure[]
 
@@ -56,8 +69,27 @@ export class DefaultRpcEndpointsError extends Error {
   }
 }
 
-export function networkDescriptor(): NetworkDescriptor {
-  return ethereumMainnetDescriptor(DEFAULT_NAMESPACE)
+export function resolveNamespace(
+  applicationInput: string,
+  majorVersionInput: string | number | bigint
+): NamespaceSelection {
+  const application = applicationInput.trim()
+  if (application.length === 0) throw new Error('Namespace name must not be empty.')
+
+  const majorVersion = parseMajorVersion(majorVersionInput)
+  return {
+    application,
+    majorVersion,
+    label: `${application}:v${majorVersion}`,
+    namespace: deriveNamespace(application, majorVersion)
+  }
+}
+
+export function networkDescriptor(
+  application = DEFAULT_NAMESPACE_APPLICATION,
+  majorVersion: string | number | bigint = DEFAULT_NAMESPACE_MAJOR_VERSION
+): NetworkDescriptor {
+  return ethereumMainnetDescriptor(resolveNamespace(application, majorVersion).namespace)
 }
 
 export function normalizeRpcUrl(value: string): string {
@@ -141,4 +173,16 @@ function nestedErrorMessage(value: unknown, visited: Set<object>, depth: number)
     if (candidate != null) return candidate
   }
   return undefined
+}
+
+function parseMajorVersion(value: string | number | bigint): bigint {
+  if (typeof value === 'number' && !Number.isSafeInteger(value)) {
+    throw new Error('Namespace version must be a safe integer.')
+  }
+  if (typeof value === 'string' && !/^(0|[1-9][0-9]*)$/.test(value.trim())) {
+    throw new Error('Namespace version must be an unsigned decimal integer.')
+  }
+  const parsed = BigInt(typeof value === 'string' ? value.trim() : value)
+  if (parsed < 0n) throw new Error('Namespace version must not be negative.')
+  return parsed
 }

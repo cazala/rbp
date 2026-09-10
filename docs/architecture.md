@@ -47,13 +47,13 @@ One supervisor cycle uses this order:
 
 Healthy nodes do not continuously scan Ethereum. Seeds renew their announcement on their maintenance interval. An unavailable registry does not stop native recovery because the provider is verified only when a scan or write is actually needed.
 
-## Registry invariants
+## Beacon invariants
 
 The registry has no storage variables and exposes only three constants plus `announce`. The event expiry is calculated from the block timestamp. Contract tests prove boundary reverts, permissionless access, no common admin selectors, no writes across sampled storage slots, fuzzed valid inputs, and invariant stability.
 
-The authoritative source is `contracts/src/ResurrectRegistryV1.sol`. The npm source mirror must compare byte-for-byte in CI.
+The authoritative source is `contracts/src/ResurrectBeaconV1.sol`. The npm source mirror must compare byte-for-byte in CI.
 
-The reference packages pin an Ethereum mainnet instance of that bytecode at `0x6F33c332e8251dcd307D85A27fCcAbd85d578910`, deployment block `25882327`. This removes repeated deployment work without changing the boundary above: namespace, provider, signed identity, candidate policy, and application authorization remain outside the registry.
+The reference packages pin the audited Ethereum mainnet instance of that bytecode at `0x136c191B5e6541532E42Ecd7C719C29D7ecdf468`, deployment block `25943058`. This removes repeated deployment work without changing the boundary above: namespace, provider, signed identity, candidate policy, and application authorization remain outside the beacon.
 
 ## Provider and scanner model
 
@@ -71,6 +71,8 @@ The general scanner binary-searches timestamps to locate the maximum-TTL window.
 ## Peer records and endpoints
 
 Codec 1 accepts raw EIP-778 RLP ENRs and enforces the ENR size/signature rules. Codec 2 accepts libp2p Signed Envelopes in the standard peer-record domain and verifies that the payload peer ID matches the signing key. Sequence-aware candidate storage prevents an older record from replacing a newer one.
+
+Those standard signatures cover the peer-record payload, not the Resurrect event envelope. In v1 they do not bind `namespace`, `recordType`, `validUntil`, TTL, transaction sender, or log position to the signer. An observer can replay valid record bytes with different event metadata; this may prolong an unavailable endpoint as a discovery candidate but does not let the observer impersonate the signed peer in Noise or the application handshake. Consumers therefore use event metadata only for bounded discovery and apply transport plus application authentication before granting trust.
 
 Endpoint policy is environment-specific. The native default rejects loopback, private, unspecified, multicast, documentation, and unsupported endpoints. Test/private overlays must opt in. The browser package accepts authenticated secure WebTransport, WSS, HTTPS, or TLS+WebSocket multiaddrs and rejects private IP literals by default.
 
@@ -94,7 +96,7 @@ key because the browser compares the Noise-authenticated peer ID with the
 signed registry record. It can still deny, delay, or observe traffic. Neither
 the tunnel nor the hosted explorer is required by the protocol.
 
-The explorer has two independent distribution paths: Cloudflare Pages and an immutable ERC-5219 router whose resources reside in Ethereum contract bytecode. Both run the same client-side discovery and peer-authentication logic. An HTTP ERC-4804 gateway is a convenience and adds its own observation, caching, and response-transformation boundary; the onchain resource hashes and direct contract responses remain independently verifiable.
+The current explorer is distributed through Cloudflare Pages and an immutable ERC-5219 router in Ethereum contract bytecode. Both builds embed the canonical Beacon deployment. An HTTP ERC-4804 gateway is a convenience and adds its own observation, caching, and response-transformation boundary; onchain resource hashes and direct contract responses remain independently verifiable.
 
 ## Persistent and ephemeral state
 

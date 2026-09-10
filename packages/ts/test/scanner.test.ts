@@ -29,6 +29,7 @@ class MockProvider implements RegistryProvider {
   failLogs = false
   rangeFailures = 0
   rangeFailureMessage = 'block range exceeds provider limit'
+  dataOverrides: Hex[] = []
 
   constructor(
     chainId = 31337n,
@@ -72,7 +73,7 @@ class MockProvider implements RegistryProvider {
       return this.records.map((record, index) => ({
         address: '0x1111111111111111111111111111111111111111',
         topics: [eventTopic, descriptor().namespace, toHex(2, { size: 32 })],
-        data: encodeAbiParameters(dataParameters, [record.validUntil, record.recordHex]),
+        data: this.dataOverrides[index] ?? encodeAbiParameters(dataParameters, [record.validUntil, record.recordHex]),
         blockNumber: toHex(8),
         logIndex: toHex(index),
         removed: false
@@ -94,6 +95,11 @@ function descriptor(): NetworkDescriptor {
     namespace: deriveNamespace('browser-scanner', 1),
     acceptedRecordTypes: [2]
   })
+}
+
+function replaceAbiWord(data: Hex, index: number, value: bigint): Hex {
+  const start = 2 + index * 64
+  return `${data.slice(0, start)}${toHex(value, { size: 32 }).slice(2)}${data.slice(start + 64)}` as Hex
 }
 
 describe('browser registry scanner', () => {
@@ -197,5 +203,23 @@ describe('browser registry scanner', () => {
     })
     expect(report.recordsRejected).toBe(2)
     expect(report.candidates).toHaveLength(1)
+  })
+
+  it('rejects non-canonical or out-of-range announcement ABI data', async () => {
+    const records = [
+      { validUntil: 2000n, recordHex: vectors.browser.recordHex as Hex },
+      { validUntil: 2000n, recordHex: vectors.browser.recordHex as Hex }
+    ]
+    const provider = new MockProvider(31337n, records)
+    const encoded = encodeAbiParameters(dataParameters, [records[0]!.validUntil, records[0]!.recordHex])
+    provider.dataOverrides = [
+      replaceAbiWord(encoded, 1, 96n),
+      replaceAbiWord(encoded, 0, 1n << 64n)
+    ]
+
+    const report = await new ResurrectBrowserClient(descriptor(), provider).scan({ confirmations: 0n })
+    expect(report.logsProcessed).toBe(2)
+    expect(report.recordsRejected).toBe(2)
+    expect(report.candidates).toHaveLength(0)
   })
 })

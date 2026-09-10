@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Local one-transaction deployer for the immutable Resurrect rendezvous beacon."
+    />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#080808" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧟‍♂️</text></svg>"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>Deploy Resurrect Beacon V1</title>
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <span class="mark">RESURRECT</span>
+        <span>ETHEREUM / DEPLOY</span>
+      </header>
+
+      <section class="intro" aria-labelledby="title">
+        <p class="eyebrow">ONE TRANSACTION · NO OWNER</p>
+        <h1 id="title">Beacon V1</h1>
+        <p>Deploy the immutable rendezvous contract from <strong>cazala.eth</strong>.</p>
+      </section>
+
+      <section class="panel" aria-label="Deployment details">
+        <dl>
+          <div>
+            <dt>ACCOUNT</dt>
+            <dd id="account">not connected</dd>
+          </div>
+          <div>
+            <dt>NETWORK</dt>
+            <dd id="network">Ethereum mainnet required</dd>
+          </div>
+          <div>
+            <dt>CONTRACT</dt>
+            <dd>ResurrectBeaconV1 · 781 bytes</dd>
+          </div>
+          <div>
+            <dt>RUNTIME</dt>
+            <dd title="0x20999e7bf54d855e3bfedebfd7053d41f0c873ecde3b9d70a71ee6dcd086bce7">
+              0x20999e7b…086bce7
+            </dd>
+          </div>
+        </dl>
+
+        <div id="estimate" class="estimate" hidden></div>
+
+        <button id="action" type="button">
+          <span>CONNECT WALLET</span>
+          <span>[injected]</span>
+        </button>
+
+        <p id="status" class="status" role="status" aria-live="polite">
+          Nothing is sent until you approve it in your wallet.
+        </p>
+
+        <div id="result" class="result" hidden></div>
+      </section>
+
+      <footer>
+        <a
+          href="https://github.com/cazala/resurrect/blob/main/contracts/src/ResurrectBeaconV1.sol"
+          target="_blank"
+          rel="noreferrer"
+        >source</a>
+        <span>solc 0.8.24 · optimizer 20,000 · Cancun</span>
+      </footer>
+    </main>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

@@ -7,7 +7,9 @@ The explorer is a small static browser application built on `@resurrect-protocol
 1. **Discovery:** Ethereum contains an unexpired, cryptographically valid signed peer record.
 2. **Liveness:** this browser established a Noise-authenticated libp2p connection to that exact peer and received a standard libp2p ping response.
 
-The initial interface has one action: **Scan**. It tries these browser-compatible public Ethereum RPCs in order and stops at the first complete scan:
+The compact namespace row accepts a readable application identifier and major version. Press **Scan** or Enter to derive the namespace and query it. Every pair, including the default `resurrect:v1`, is derived canonically as `keccak256("resurrect:<application>:<major>")` by the client helper.
+
+The scan tries these browser-compatible public Ethereum RPCs in order and stops at the first complete result:
 
 1. `https://rpc.mevblocker.io`
 2. `https://ethereum-rpc.publicnode.com`
@@ -48,7 +50,9 @@ Enforce the onchain-oriented artifact budget after building:
 pnpm --dir apps/explorer run check:size
 ```
 
-The build has deterministic relative filenames, omits source maps, and loads the large libp2p probe only when a peer is pinged. CI caps the complete artifact at 525 KB raw and 160 KB gzip. See [Onchain explorer](../../docs/onchain-explorer.md).
+The build has deterministic relative filenames, omits source maps, avoids runtime ABI parsers in the registry scanner, and loads the large libp2p probe only when a peer is pinged. CI caps the complete artifact at 525 KB raw and 160 KB gzip; the size report also shows the Brotli equivalent.
+
+`dist/` intentionally contains normal uncompressed resources. Cloudflare or another conventional HTTP server can compress those bytes in transit. A future onchain router can instead store compressed bodies and return `Content-Encoding` metadata using [ERC-7618](https://eips.ethereum.org/EIPS/eip-7618), subject to gateway support. The current immutable ERC-5219 router serves these raw resource bodies, so local builds do not add `.gz` files that gateways would treat as different resources. See [Onchain explorer](../../docs/onchain-explorer.md).
 
 ## Deployment
 

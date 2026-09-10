@@ -20,8 +20,8 @@ describe('network descriptor', () => {
 
     expect(ETHEREUM_MAINNET_REGISTRY).toEqual({
       chainId: 1n,
-      address: '0x6F33c332e8251dcd307D85A27fCcAbd85d578910',
-      deploymentBlock: 25_882_327n,
+      address: '0x136c191B5e6541532E42Ecd7C719C29D7ecdf468',
+      deploymentBlock: 25_943_058n,
       maxTtlSeconds: 7_776_000
     })
     expect(ETHEREUM_MAINNET_MAX_BLOCKS_PER_TTL).toBe(650_000n)

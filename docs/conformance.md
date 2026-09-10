@@ -4,7 +4,7 @@ This map connects every item in section 29 of the specification to implementatio
 
 | Implementer checklist item | Implementation | CI evidence |
 |---|---|---|
-| Deploy immutable registry locally | `contracts/src/ResurrectRegistryV1.sol` | fresh `forge create`; selector surface and contract suites |
+| Deploy immutable beacon locally | `contracts/src/ResurrectBeaconV1.sol` | fresh `forge create`; selector surface and contract suites |
 | Generate self-authenticating record | `resurrect-libp2p::sign_peer_record` | cross-language vectors and live seed announcement |
 | Publish under arbitrary namespace | Alloy publisher and `RegistryAnnouncer` | fresh `keccak` namespaces for reboot scenarios |
 | Scan only recent TTL window | native timestamp binary search and browser chain-bounded block lookback | scanner unit tests plus live recovery |
@@ -37,4 +37,4 @@ Additional required-test evidence from section 24:
 | browser provider/privacy/endpoints | TypeScript provider, scanner, record, explorer, and Rust-interoperability suites |
 | immutable browser distribution | fresh ERC-5219 deployment plus byte-for-byte verification of all six production resources |
 
-The output artifact contains one boolean for every checklist claim plus the temporary registry and onchain-explorer router addresses. A false claim or missing artifact fails CI. This is reference-implementation evidence, not a third-party audit or proof about an external deployment.
+The output artifact contains one boolean for every checklist claim plus the temporary registry and onchain-explorer router addresses. A false claim or missing artifact fails CI. This is reference-implementation evidence; the separate review of the deployed beacon is documented in [Audits](audits.md) and does not extend to temporary CI deployments.

@@ -8,6 +8,8 @@ import {
   type ScanReport
 } from '@resurrect-protocol/client'
 import {
+  DEFAULT_NAMESPACE_APPLICATION,
+  DEFAULT_NAMESPACE_MAJOR_VERSION,
   DEFAULT_RPC_ENDPOINTS,
   DefaultRpcEndpointsError,
   EXPLORER_SCAN_OPTIONS,
@@ -17,9 +19,11 @@ import {
   friendlyError,
   networkDescriptor,
   normalizeRpcUrl,
+  resolveNamespace,
   scanWithRpcFallback,
   shortValue,
-  summarizeScan
+  summarizeScan,
+  type NamespaceSelection
 } from './model.js'
 import type { PeerProbeSession } from './peer-probe.js'
 import './styles.css'
@@ -30,7 +34,7 @@ declare global {
   }
 }
 
-const descriptor = networkDescriptor()
+const defaultDescriptor = networkDescriptor()
 const app = document.querySelector<HTMLDivElement>('#app')
 if (app == null) throw new Error('Explorer mount point is missing')
 
@@ -39,7 +43,7 @@ app.innerHTML = `
     <header>
       <a class="wordmark" href="./" aria-label="Resurrect Explorer home"><span aria-hidden="true">./</span>resurrect</a>
       <nav aria-label="Project links">
-        <a href="https://etherscan.io/address/${descriptor.registry.address}#code" target="_blank" rel="noreferrer">contract</a>
+        <a href="https://etherscan.io/address/${defaultDescriptor.registry.address}#code" target="_blank" rel="noreferrer">contract</a>
         <a href="https://github.com/cazala/resurrect" target="_blank" rel="noreferrer">source↗</a>
       </nav>
     </header>
@@ -52,7 +56,18 @@ app.innerHTML = `
       </section>
 
       <section class="controls" aria-label="Ethereum registry scan">
-        <button class="scan-button" id="scan-button" type="button"><span id="scan-button-label">Scan</span><span aria-hidden="true">[enter]</span></button>
+        <form class="scan-form" id="scan-form">
+          <div class="namespace-field">
+            <label for="namespace-application">namespace</label>
+            <div class="namespace-inputs">
+              <input id="namespace-application" name="namespace-application" type="text" value="${DEFAULT_NAMESPACE_APPLICATION}" required maxlength="128" aria-label="Namespace name" spellcheck="false" autocapitalize="none" autocomplete="off" />
+              <span aria-hidden="true">:v</span>
+              <input id="namespace-version" name="namespace-version" type="text" value="${DEFAULT_NAMESPACE_MAJOR_VERSION}" required inputmode="numeric" pattern="(?:0|[1-9][0-9]*)" aria-label="Namespace major version" spellcheck="false" autocomplete="off" />
+            </div>
+          </div>
+          <button class="scan-button" id="scan-button" type="submit"><span id="scan-button-label">Scan</span><span aria-hidden="true">[enter]</span></button>
+        </form>
+        <p class="form-error namespace-error" id="namespace-error" role="alert" hidden></p>
 
         <div class="fallback" id="provider-fallback" hidden>
           <p class="fallback-copy"><strong>Default RPCs didn’t work.</strong> Enter an Ethereum RPC or connect your wallet.</p>
@@ -87,8 +102,12 @@ app.innerHTML = `
 `
 
 const fallback = requiredElement<HTMLElement>('provider-fallback')
+const scanForm = requiredElement<HTMLFormElement>('scan-form')
 const fallbackForm = requiredElement<HTMLFormElement>('fallback-form')
 const rpcInput = requiredElement<HTMLInputElement>('rpc-url')
+const namespaceApplicationInput = requiredElement<HTMLInputElement>('namespace-application')
+const namespaceVersionInput = requiredElement<HTMLInputElement>('namespace-version')
+const namespaceError = requiredElement<HTMLElement>('namespace-error')
 const scanButton = requiredElement<HTMLButtonElement>('scan-button')
 const scanButtonLabel = requiredElement<HTMLElement>('scan-button-label')
 const customRpcButton = requiredElement<HTMLButtonElement>('custom-rpc-button')
@@ -97,37 +116,48 @@ const formError = requiredElement<HTMLElement>('form-error')
 let scanNumber = 0
 let activeProbe: PeerProbeSession | undefined
 
-scanButton.addEventListener('click', () => { void scanDefaults() })
+scanForm.addEventListener('submit', (event) => { event.preventDefault(); void scanDefaults() })
 fallbackForm.addEventListener('submit', (event) => { event.preventDefault(); void scanCustomRpc() })
 walletButton.addEventListener('click', () => { void scanWallet() })
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Enter' || event.repeat || event.defaultPrevented || scanButton.disabled) return
+  const target = event.target
+  if (target instanceof HTMLElement && target.closest('a, button, textarea, select, [contenteditable="true"]') != null) return
+  if (target instanceof HTMLInputElement && fallbackForm.contains(target)) return
+  event.preventDefault()
+  scanForm.requestSubmit()
+})
 window.addEventListener('pagehide', () => { void activeProbe?.close() })
 
 async function scanDefaults(): Promise<void> {
+  if (scanButton.disabled) return
+  const network = selectedNetwork()
+  if (network == null) return
   const currentScan = await beginScan()
   fallback.hidden = true
   try {
     const { endpoint, result } = await scanWithRpcFallback(
-      async ({ url }) => new ResurrectBrowserClient(descriptor, jsonRpcProvider(url)).scan(EXPLORER_SCAN_OPTIONS),
+      async ({ url }) => new ResurrectBrowserClient(network.descriptor, jsonRpcProvider(url)).scan(EXPLORER_SCAN_OPTIONS),
       (endpoint, index, total) => {
         if (currentScan !== scanNumber) return
         setStatus('loading', 'scanning')
-        requiredElement<HTMLElement>('scan-context').textContent = `rpc ${index + 1}/${total} // ${endpoint.name} // ${new URL(endpoint.url).host}`
+        requiredElement<HTMLElement>('scan-context').textContent = `${network.namespace.label} // rpc ${index + 1}/${total} // ${endpoint.name}`
         renderEmpty(`querying ${endpoint.name}…`)
       }
     )
     if (currentScan !== scanNumber) return
-    renderReport(result, endpoint.name)
+    renderReport(result, endpoint.name, network.namespace.label)
     setStatus('connected', 'found')
   } catch (error) {
     if (currentScan !== scanNumber) return
     if (error instanceof DefaultRpcEndpointsError) {
       fallback.hidden = false
       setStatus('error', 'rpc failed')
-      requiredElement<HTMLElement>('scan-context').textContent = `tried ${DEFAULT_RPC_ENDPOINTS.length} public RPCs // manual fallback ready`
+      requiredElement<HTMLElement>('scan-context').textContent = `${network.namespace.label} // tried ${DEFAULT_RPC_ENDPOINTS.length} public RPCs`
       renderEmpty('scan incomplete.')
       rpcInput.focus()
     } else {
-      showProviderError(error)
+      showProviderError(error, network.namespace.label)
     }
   } finally {
     if (currentScan === scanNumber) setBusy(false)
@@ -157,18 +187,20 @@ async function scanWallet(): Promise<void> {
 }
 
 async function scanSingleProvider(provider: RegistryProvider, label: string): Promise<void> {
+  const network = selectedNetwork()
+  if (network == null) return
   const currentScan = await beginScan()
   setStatus('loading', 'scanning')
-  requiredElement<HTMLElement>('scan-context').textContent = `rpc // ${label}`
+  requiredElement<HTMLElement>('scan-context').textContent = `${network.namespace.label} // ${label}`
   renderEmpty(`querying ${label}…`)
   try {
-    const report = await new ResurrectBrowserClient(descriptor, provider).scan(EXPLORER_SCAN_OPTIONS)
+    const report = await new ResurrectBrowserClient(network.descriptor, provider).scan(EXPLORER_SCAN_OPTIONS)
     if (currentScan !== scanNumber) return
-    renderReport(report, label)
+    renderReport(report, label, network.namespace.label)
     setStatus('connected', 'found')
   } catch (error) {
     if (currentScan !== scanNumber) return
-    showProviderError(error)
+    showProviderError(error, network.namespace.label)
   } finally {
     if (currentScan === scanNumber) setBusy(false)
   }
@@ -184,12 +216,14 @@ async function beginScan(): Promise<number> {
   return currentScan
 }
 
-function showProviderError(error: unknown): void {
+function showProviderError(error: unknown, namespaceLabel?: string): void {
   fallback.hidden = false
   formError.textContent = friendlyError(error)
   formError.hidden = false
   setStatus('error', 'failed')
-  requiredElement<HTMLElement>('scan-context').textContent = 'manual provider failed // retry or scan defaults'
+  requiredElement<HTMLElement>('scan-context').textContent = namespaceLabel == null
+    ? 'manual provider failed // retry or scan defaults'
+    : `${namespaceLabel} // provider failed`
   renderEmpty('scan incomplete.')
 }
 
@@ -201,12 +235,12 @@ function renderEmpty(message: string): void {
   list.replaceChildren(empty)
 }
 
-function renderReport(report: ScanReport, provider: string): void {
+function renderReport(report: ScanReport, provider: string, namespaceLabel: string): void {
   const summary = summarizeScan(report)
   requiredElement<HTMLElement>('metric-announcements').textContent = summary.announcements
   requiredElement<HTMLElement>('metric-peers').textContent = summary.browserPeers
   requiredElement<HTMLElement>('metric-head').textContent = summary.confirmedHead
-  requiredElement<HTMLElement>('scan-context').textContent = `${provider} // ${formatChainTime(report.headTimestamp)}`
+  requiredElement<HTMLElement>('scan-context').textContent = `${namespaceLabel} // ${provider} // ${formatChainTime(report.headTimestamp)}`
   requiredElement<HTMLElement>('scan-summary').hidden = false
   const list = requiredElement<HTMLElement>('peer-list')
   list.replaceChildren()
@@ -296,6 +330,8 @@ function requireInjectedProvider(): Eip1193Provider {
 
 function setBusy(busy: boolean): void {
   scanButton.disabled = busy
+  namespaceApplicationInput.disabled = busy
+  namespaceVersionInput.disabled = busy
   customRpcButton.disabled = busy
   walletButton.disabled = busy
   scanButtonLabel.textContent = busy ? 'Scanning…' : 'Scan'
@@ -308,8 +344,26 @@ function setStatus(state: 'loading' | 'connected' | 'error', label: string): voi
 }
 
 function clearError(): void {
+  namespaceError.hidden = true
+  namespaceError.textContent = ''
   formError.hidden = true
   formError.textContent = ''
+}
+
+function selectedNetwork(): { descriptor: ReturnType<typeof networkDescriptor>, namespace: NamespaceSelection } | undefined {
+  try {
+    const namespace = resolveNamespace(namespaceApplicationInput.value, namespaceVersionInput.value)
+    return {
+      descriptor: networkDescriptor(namespace.application, namespace.majorVersion),
+      namespace
+    }
+  } catch (error) {
+    namespaceError.textContent = errorMessage(error)
+    namespaceError.hidden = false
+    setStatus('error', 'invalid namespace')
+    namespaceApplicationInput.focus()
+    return undefined
+  }
 }
 
 function requiredElement<T extends HTMLElement>(id: string): T {

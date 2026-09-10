@@ -14,9 +14,9 @@ push-triggered CI run for `main`, `deploy-explorer.yml` uploads the exact tested
 commit to Cloudflare Pages project `resurrect`, served at
 [resurrect.caza.la](https://resurrect.caza.la).
 
-The canonical registry and immutable-site Solidity sources, both ABIs, and both machine-readable Ethereum deployment manifests are distributed by npm rather than a separate contract binary channel. Rust and TypeScript packages expose the registry address/block as typed constants and constructors; packaging tests fail if any contract source or deployment record drifts.
+The canonical beacon and immutable-site Solidity sources, both ABIs, and both machine-readable Ethereum deployment manifests are distributed by npm rather than a separate contract binary channel. Rust and TypeScript packages expose the beacon address/block through typed descriptor constants and constructors; packaging tests fail if any contract source or deployment record drifts.
 
-The current immutable explorer is a separately versioned Ethereum deployment. CI publishes its source, ABI, and complete deployment metadata, but deliberately does not redeploy it: each onchain version costs ETH, is irreversible, and requires post-deployment byte and gateway verification. A reviewed new explorer version must follow [the onchain release procedure](onchain-explorer.md#publishing-a-new-immutable-version), then update the package mirror in a normal release commit.
+The immutable explorer is a separately versioned Ethereum deployment. CI publishes its source, ABI, and complete production deployment metadata, but deliberately does not redeploy it: each onchain version costs ETH, is irreversible, and requires post-deployment byte and gateway verification. A reviewed replacement must follow [the onchain release procedure](onchain-explorer.md#publishing-another-immutable-version), then update the package mirror in a normal release commit.
 
 ## Development releases from main
 

@@ -88,8 +88,8 @@ Every application pins the chain, immutable registry, deployment block, namespac
   "resurrectVersion": 1,
   "registry": {
     "chainId": 1,
-    "address": "0x6F33c332e8251dcd307D85A27fCcAbd85d578910",
-    "deploymentBlock": 25882327,
+    "address": "0x136c191B5e6541532E42Ecd7C719C29D7ecdf468",
+    "deploymentBlock": 25943058,
     "maxTtlSeconds": 7776000
   },
   "namespace": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -99,7 +99,7 @@ Every application pins the chain, immutable registry, deployment block, namespac
 
 The JSON schema is intentionally closed: unknown fields are rejected. It never contains an RPC hostname. Applications derive a namespace with `keccak256("resurrect:<application>:<major-version>")` and distribute the descriptor as ordinary versioned application configuration.
 
-The reference packages pin the verified Ethereum mainnet deployment at `0x6F33c332e8251dcd307D85A27fCcAbd85d578910` (chain ID `1`, block `25882327`). Its transaction, tagged source revision, compiler settings, runtime-bytecode hash, and verification links are recorded in [Deployments](docs/deployments.md) and the machine-readable [deployment manifest](deployments/ethereum-mainnet.json). A shared stateless registry does not select an application namespace, peer list, or RPC provider.
+The reference packages pin the verified and audited Ethereum mainnet Beacon at `0x136c191B5e6541532E42Ecd7C719C29D7ecdf468` (chain ID `1`, block `25943058`). Its transaction, compiler settings, runtime-bytecode hash, verification links, and audit are recorded in [Deployments](docs/deployments.md) and the machine-readable [deployment manifest](deployments/ethereum-mainnet.json). A shared stateless beacon does not select an application namespace, peer list, or RPC provider.
 
 ## Run a native node
 
@@ -202,15 +202,15 @@ Discovery never invokes `eth_requestAccounts`. The client verifies the chain and
 
 The package returns signed, validated dial candidates; the host application still owns its browser transport and authenticated application handshake. The repository's [hosted explorer](https://resurrect.caza.la) is a minimal reference host: it scans the canonical namespace, completes an authenticated libp2p WSS/Noise/Yamux connection, checks the remote peer ID, runs identify, and measures a standard libp2p ping. See [Browser client](docs/browser-client.md).
 
-The exact same production artifact is permanently stored on Ethereum behind the immutable, [source-verified ERC-5219 router](https://etherscan.io/address/0xb69aF08877a0C417169135D6710Bca4840CCCdE1#code) `0xb69aF08877a0C417169135D6710Bca4840CCCdE1`. Open it through [w3eth](https://0xb69af08877a0c417169135d6710bca4840cccde1.w3eth.io/) or [w3link](https://0xb69af08877a0c417169135d6710bca4840cccde1.1.w3link.io/), or use `web3://0xb69aF08877a0C417169135D6710Bca4840CCCdE1:1/` with a native ERC-4804 client. Deployment hashes and reconstruction evidence are recorded in [Onchain explorer](docs/onchain-explorer.md).
+The current explorer is also permanently stored on Ethereum behind the immutable, [source-verified ERC-5219 router](https://etherscan.io/address/0x14765f12a7f068EDf42dF4920fd5170ADBa73306#code) `0x14765f12a7f068EDf42dF4920fd5170ADBa73306`. It embeds the canonical Beacon deployment and is available through [w3eth](https://0x14765f12a7f068edf42df4920fd5170adba73306.w3eth.io/) and [w3link](https://0x14765f12a7f068edf42df4920fd5170adba73306.1.w3link.io/). Deployment hashes and byte-for-byte reconstruction evidence are recorded in [Onchain explorer](docs/onchain-explorer.md).
 
 ## Contract
 
-`ResurrectRegistryV1` has exactly four public function selectors: `VERSION()`, `MAX_TTL()`, `MAX_RECORD_BYTES()`, and `announce(bytes32,uint32,uint32,bytes)`. It has no owner, storage-backed peer set, upgrade, pause, allowlist, withdrawal, or namespace administrator.
+`ResurrectBeaconV1` has exactly four public function selectors: `VERSION()`, `MAX_TTL()`, `MAX_RECORD_BYTES()`, and `announce(bytes32,uint32,uint32,bytes)`. It has no owner, storage-backed peer set, upgrade, pause, allowlist, withdrawal, or namespace administrator. Despite its name, it is a rendezvous beacon rather than an upgradeable proxy beacon.
 
-The canonical source is [`contracts/src/ResurrectRegistryV1.sol`](contracts/src/ResurrectRegistryV1.sol). CI requires its npm package mirror to be byte-for-byte identical. The reference Ethereum mainnet deployment is `0x6F33c332e8251dcd307D85A27fCcAbd85d578910` at block `25882327`; its runtime bytecode exactly matches the tagged local build and its source is publicly verified. Applications should independently reproduce that verification or pin another exact deployment.
+The canonical source is [`contracts/src/ResurrectBeaconV1.sol`](contracts/src/ResurrectBeaconV1.sol). CI requires its npm package mirror to be byte-for-byte identical. The canonical Ethereum mainnet deployment is [`0x136c191B5e6541532E42Ecd7C719C29D7ecdf468`](https://etherscan.io/address/0x136c191B5e6541532E42Ecd7C719C29D7ecdf468#code) at block `25943058`; its runtime bytecode matches the local build, its source is publicly verified, and it received an external AI-orchestrated contract review. The [immutable audit report](https://bafkreid22gqqrzwo6b6scxqnmcmiinru3xzigz74xkere2573r6ivulzjq.ipfs.community.bgipfs.com/) reports 0 Critical, 0 High, 0 Medium, 2 Low, and 1 Informational finding. See [Audits](docs/audits.md) for scope and disposition.
 
-`ResurrectOnchainSite` is a separate immutable content router. It serves the six production explorer resources from 25 bytecode-storage contracts, implements ERC-5219, and advertises the ERC-6944 resolve mode `5219`. It has no owner, mutable storage, or upgrade path. The router source, ABI, and complete Ethereum deployment manifest are exported by `@resurrect-protocol/contracts`; see [Deployments](docs/deployments.md) and the [ENS setup guide](docs/ens-onchain-explorer.md).
+`ResurrectOnchainSite` is a separate immutable content-router implementation. The production deployment serves six explorer resources from 24 bytecode-storage contracts, implements ERC-5219, and advertises the ERC-6944 resolve mode `5219`. It has no owner, mutable storage, or upgrade path. Its source, ABI, and complete Ethereum deployment manifest are exported by `@resurrect-protocol/contracts`; see [Deployments](docs/deployments.md) and the [ENS setup guide](docs/ens-onchain-explorer.md).
 
 ## Security
 
@@ -218,6 +218,7 @@ The canonical source is [`contracts/src/ResurrectRegistryV1.sol`](contracts/src/
 - Authenticate the signed record and then the application protocol.
 - Bound decoding, log processing, retained candidates, concurrent dials, timeouts, and retry rate.
 - Do not interpret publisher addresses, log ordering, or payment as reputation.
+- Do not assume the peer-record signature binds the event namespace, record type, TTL, expiry, or transaction sender; those fields remain untrusted discovery metadata in v1.
 - Preserve native discovery and peer diversity to reduce eclipse risk.
 - Do not announce private endpoints or stable identities when endpoint privacy is required.
 - Replace or compare registry providers when omission or privacy threats matter.
@@ -240,8 +241,8 @@ The release pipeline runs tests before publication and publishes dependency crat
 
 ## Project status
 
-The protocol specification is a draft. The implementation is conformance-oriented and comprehensively tested, but it has not been represented here as externally audited. Production users should review the contract, peer-record parsing, endpoint policy, application handshake, key handling, and chain/RPC assumptions for their threat model.
+The protocol specification is a draft and the implementation is conformance-oriented and comprehensively tested. `ResurrectBeaconV1` at `0x136c191B5e6541532E42Ecd7C719C29D7ecdf468` was reviewed through OneDollarAudit; read the [report and maintainer disposition](docs/audits.md). That review is scoped to the 37-line deployed contract, not the Rust, TypeScript, node, explorer, peer-record codecs, or application handshake. Production users should review those components, key handling, and chain/RPC assumptions for their threat model.
 
 ## Contributing and license
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Rust, TypeScript, and the immutable-site contract are available under MIT or Apache-2.0 at your option. The canonical registry contract is CC0-1.0 as declared in its source. Dependency licenses remain their own.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Rust, TypeScript, and the immutable-site contract are available under MIT or Apache-2.0 at your option. The registry and beacon contracts are CC0-1.0 as declared in their sources. Dependency licenses remain their own.

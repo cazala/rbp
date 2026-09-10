@@ -34,9 +34,15 @@ The source-verified production router is `0x14765f12a7f068EDf42dF4920fd5170ADBa7
 
 Open it through:
 
+- `https://resurrect.wei.domains/` — primary human-readable entry point;
+- `web3://resurrect.wei/`;
 - `web3://0x14765f12a7f068EDf42dF4920fd5170ADBa73306:1/`;
 - `https://0x14765f12a7f068edf42df4920fd5170adba73306.w3eth.io/`; or
 - `https://0x14765f12a7f068edf42df4920fd5170adba73306.1.w3link.io/`.
+
+The deployment JSON also records the WNS contract, `resurrect.wei` token ID,
+owner, expiry, resolved address, ERC-6821 `contentcontract`, registration and
+configuration transactions, cost, and byte-for-byte WNS gateway verification.
 
 Consumers should independently compare deployed code and resources with the pinned source and build artifact before relying on them.
 

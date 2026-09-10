@@ -1,6 +1,6 @@
 # Resurrect Explorer
 
-The production explorer is hosted at [resurrect.caza.la](https://resurrect.caza.la). Its source is this directory; it has no server-side application or private API.
+The production explorer is stored on Ethereum and opened through [resurrect.wei](https://resurrect.wei.domains/). Its source is this directory; it has no server-side application or private API. Cloudflare Pages serves a continuously deployed conventional mirror.
 
 The explorer is a small static browser application built on `@resurrect-protocol/client`. It separates two different claims:
 
@@ -66,6 +66,11 @@ The workflow needs repository or `explorer-production` environment secrets
 named `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN`. The token needs
 Cloudflare Pages edit access for the account; it does not need DNS, Tunnel, or
 zone-wide write access after the custom domain is attached.
+
+Pages does not update the immutable onchain version. The canonical onchain
+router and its `resurrect.wei` WNS records are documented in
+[Onchain explorer](../../docs/onchain-explorer.md) and
+[WNS onchain explorer](../../docs/wei-onchain-explorer.md).
 
 ## What the explorer reports
 

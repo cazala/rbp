@@ -12,11 +12,12 @@ The explorer is a private workspace application rather than a reusable package.
 Its production build is still published automatically: after a successful
 push-triggered CI run for `main`, `deploy-explorer.yml` uploads the exact tested
 commit to Cloudflare Pages project `resurrect`, served at
-[resurrect.caza.la](https://resurrect.caza.la).
+[resurrect.caza.la](https://resurrect.caza.la). This is a conventional mirror;
+the canonical immutable release is [resurrect.wei](https://resurrect.wei.domains/).
 
 The canonical beacon and immutable-site Solidity sources, both ABIs, and both machine-readable Ethereum deployment manifests are distributed by npm rather than a separate contract binary channel. Rust and TypeScript packages expose the beacon address/block through typed descriptor constants and constructors; packaging tests fail if any contract source or deployment record drifts.
 
-The immutable explorer is a separately versioned Ethereum deployment. CI publishes its source, ABI, and complete production deployment metadata, but deliberately does not redeploy it: each onchain version costs ETH, is irreversible, and requires post-deployment byte and gateway verification. A reviewed replacement must follow [the onchain release procedure](onchain-explorer.md#publishing-another-immutable-version), then update the package mirror in a normal release commit.
+The immutable explorer is a separately versioned Ethereum deployment. CI publishes its source, ABI, and complete production deployment metadata, but deliberately does not redeploy it: each onchain version costs ETH, is irreversible, and requires post-deployment byte and gateway verification. A reviewed replacement must follow [the onchain release procedure](onchain-explorer.md#publishing-another-immutable-version), update both `resurrect.wei` WNS router records, and then update the package mirror in a normal release commit.
 
 ## Development releases from main
 
@@ -59,7 +60,7 @@ Those credentials deploy static assets only. The workflow does not administer
 DNS or Tunnel configuration and never receives the seed identity, Ethereum
 payer key, RPC URL, or Cloudflare connector token.
 
-No onchain explorer deployer key belongs in GitHub Actions. The private key and deployment RPC are supplied only to a deliberate manual Foundry broadcast, never committed, packaged, uploaded as an artifact, or exposed to Pages. ENS updates are signed by the ENS owner separately after the immutable deployment has passed its verification gate.
+No onchain explorer or WNS owner key belongs in GitHub Actions. The private key and deployment RPC are supplied only to a deliberate manual transaction, never committed, packaged, uploaded as an artifact, or exposed to Pages. WNS updates are signed by the name owner only after the immutable deployment has passed its verification gate.
 
 GitHub's built-in token supplies release upload and attestation permissions. The asset job passes `GITHUB_REPOSITORY` to `gh release upload` explicitly because it intentionally does not check out source or rely on local Git metadata. No contract deployer key, production RPC URL, libp2p identity, hosted API key, DNS credential, or Ethereum announcement key is needed by CI.
 

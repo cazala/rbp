@@ -20,6 +20,8 @@ The current Resurrect explorer is stored entirely on Ethereum mainnet behind an 
 
 Open the immutable application through:
 
+- [resurrect.wei](https://resurrect.wei.domains/) — primary human-readable entry point;
+- native name URL: `web3://resurrect.wei/`;
 - native ERC-4804: `web3://0x14765f12a7f068EDf42dF4920fd5170ADBa73306:1/`;
 - [w3eth](https://0x14765f12a7f068edf42df4920fd5170adba73306.w3eth.io/); or
 - [w3link](https://0x14765f12a7f068edf42df4920fd5170adba73306.1.w3link.io/).
@@ -53,6 +55,8 @@ The deployment passed these checks:
 - the deployed JavaScript contains the canonical Beacon address and omits superseded discovery defaults;
 - Etherscan accepted the pinned source and compiler settings;
 - Sourcify independently matched creation and runtime bytecode; and
+- `resurrect.wei` resolved to the router with a matching ERC-6821 `contentcontract` record and empty contenthash;
+- the WNS gateway rendered the explorer and served all six resources byte-for-byte equal to the local build; and
 - w3eth and w3link served the root document and every imported CSS and JavaScript resource, with every imported resource byte-for-byte equal to the local build.
 
 The browser interoperability suite separately proves signed-record validation, Noise peer authentication, identify, and standard libp2p ping. A release operator should also perform a manual Scan/Ping check through the intended gateway before changing ENS.
@@ -99,9 +103,9 @@ scripts/verify-onchain-explorer.sh \
 
 ## Publishing another immutable version
 
-An onchain release cannot be patched. Build and test a reviewed source tree that pins the intended Beacon, deploy every resource and a new router, reconstruct every file through a caller-selected mainnet provider, verify the router source independently, test intended gateways and authenticated ping, replace the package deployment manifest, and then update the ENS address record. Never introduce a mutable owner or proxy merely to reuse an address.
+An onchain release cannot be patched. Build and test a reviewed source tree that pins the intended Beacon, deploy every resource and a new router, reconstruct every file through a caller-selected mainnet provider, verify the router source independently, test intended gateways and authenticated ping, replace the package deployment manifest, and then update both WNS router records. Never introduce a mutable owner or proxy merely to reuse an address.
 
-See [ENS onchain explorer](ens-onchain-explorer.md) for the exact `resurrect.cazala.eth` update and verification procedure.
+See [WNS onchain explorer](wei-onchain-explorer.md) for the exact `resurrect.wei` registration, verification, renewal, and future-router procedure.
 
 ## Discovery without an indexer
 

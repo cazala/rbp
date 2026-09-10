@@ -40,7 +40,7 @@ Resurrect does not recover lost application data, define application membership,
 | `crates/resurrect-node` | native libp2p host, SQLite cache, supervisor, CLI | `resurrect-node` crate and binaries |
 | `packages/ts` | browser/static provider and registry scanner | `@resurrect-protocol/client` |
 | `packages/contracts` | canonical Solidity source and ABI | `@resurrect-protocol/contracts` |
-| `apps/explorer` | browser discovery, authenticated WSS dial, identify, and ping UI | [resurrect.caza.la](https://resurrect.caza.la) |
+| `apps/explorer` | browser discovery, authenticated WSS dial, identify, and ping UI | [resurrect.wei](https://resurrect.wei.domains/) |
 | `test-vectors/` | deterministic Rust/TypeScript interoperability data | repository data |
 | `scripts/` | conformance, packaging, and release automation | CI tooling |
 
@@ -200,9 +200,9 @@ const { candidates } = await client.scan({
 
 Discovery never invokes `eth_requestAccounts`. The client verifies the chain and contract constants before scanning, searches only the recent TTL window, validates libp2p signed envelopes, and retains secure browser-capable endpoints. The Ethereum block lookback avoids historical state and block-body access; it uses bounded `eth_getLogs` calls and does not require an archive node. RPC URLs remain in memory unless the application explicitly calls `persistJsonRpcUrl`.
 
-The package returns signed, validated dial candidates; the host application still owns its browser transport and authenticated application handshake. The repository's [hosted explorer](https://resurrect.caza.la) is a minimal reference host: it scans the canonical namespace, completes an authenticated libp2p WSS/Noise/Yamux connection, checks the remote peer ID, runs identify, and measures a standard libp2p ping. See [Browser client](docs/browser-client.md).
+The package returns signed, validated dial candidates; the host application still owns its browser transport and authenticated application handshake. The repository's [onchain explorer](https://resurrect.wei.domains/) is a minimal reference host: it scans the canonical namespace, completes an authenticated libp2p WSS/Noise/Yamux connection, checks the remote peer ID, runs identify, and measures a standard libp2p ping. See [Browser client](docs/browser-client.md).
 
-The current explorer is also permanently stored on Ethereum behind the immutable, [source-verified ERC-5219 router](https://etherscan.io/address/0x14765f12a7f068EDf42dF4920fd5170ADBa73306#code) `0x14765f12a7f068EDf42dF4920fd5170ADBa73306`. It embeds the canonical Beacon deployment and is available through [w3eth](https://0x14765f12a7f068edf42df4920fd5170adba73306.w3eth.io/) and [w3link](https://0x14765f12a7f068edf42df4920fd5170adba73306.1.w3link.io/). Deployment hashes and byte-for-byte reconstruction evidence are recorded in [Onchain explorer](docs/onchain-explorer.md).
+The explorer is permanently stored on Ethereum behind the immutable, [source-verified ERC-5219 router](https://etherscan.io/address/0x14765f12a7f068EDf42dF4920fd5170ADBa73306#code) `0x14765f12a7f068EDf42dF4920fd5170ADBa73306`. The registered WNS name `resurrect.wei` resolves to that router and publishes its ERC-6821 `contentcontract` record, making [resurrect.wei.domains](https://resurrect.wei.domains/) the primary onchain entry point. Address-based [w3eth](https://0x14765f12a7f068edf42df4920fd5170adba73306.w3eth.io/) and [w3link](https://0x14765f12a7f068edf42df4920fd5170adba73306.1.w3link.io/) URLs remain independent fallbacks. Deployment hashes and byte-for-byte reconstruction evidence are recorded in [Onchain explorer](docs/onchain-explorer.md).
 
 ## Contract
 
@@ -210,7 +210,7 @@ The current explorer is also permanently stored on Ethereum behind the immutable
 
 The canonical source is [`contracts/src/ResurrectBeaconV1.sol`](contracts/src/ResurrectBeaconV1.sol). CI requires its npm package mirror to be byte-for-byte identical. The canonical Ethereum mainnet deployment is [`0x136c191B5e6541532E42Ecd7C719C29D7ecdf468`](https://etherscan.io/address/0x136c191B5e6541532E42Ecd7C719C29D7ecdf468#code) at block `25943058`; its runtime bytecode matches the local build, its source is publicly verified, and it received an external AI-orchestrated contract review. The [immutable audit report](https://bafkreid22gqqrzwo6b6scxqnmcmiinru3xzigz74xkere2573r6ivulzjq.ipfs.community.bgipfs.com/) reports 0 Critical, 0 High, 0 Medium, 2 Low, and 1 Informational finding. See [Audits](docs/audits.md) for scope and disposition.
 
-`ResurrectOnchainSite` is a separate immutable content-router implementation. The production deployment serves six explorer resources from 24 bytecode-storage contracts, implements ERC-5219, and advertises the ERC-6944 resolve mode `5219`. It has no owner, mutable storage, or upgrade path. Its source, ABI, and complete Ethereum deployment manifest are exported by `@resurrect-protocol/contracts`; see [Deployments](docs/deployments.md) and the [ENS setup guide](docs/ens-onchain-explorer.md).
+`ResurrectOnchainSite` is a separate immutable content-router implementation. The production deployment serves six explorer resources from 24 bytecode-storage contracts, implements ERC-5219, and advertises the ERC-6944 resolve mode `5219`. It has no owner, mutable storage, or upgrade path. Its source, ABI, complete Ethereum deployment manifest, and `resurrect.wei` registration evidence are exported by `@resurrect-protocol/contracts`; see [Deployments](docs/deployments.md) and the [WNS name guide](docs/wei-onchain-explorer.md).
 
 ## Security
 
@@ -235,7 +235,9 @@ All publishable artifacts are released by one CI workflow:
 
 The private explorer application is not a registry package. After the same
 `main` CI run succeeds, a separate workflow deploys its tested static build to
-Cloudflare Pages at [resurrect.caza.la](https://resurrect.caza.la).
+a Cloudflare Pages mirror. The canonical onchain release remains the immutable
+build at [resurrect.wei.domains](https://resurrect.wei.domains/); publishing a
+new Pages build does not alter the onchain router or WNS records.
 
 The release pipeline runs tests before publication and publishes dependency crates in topological order with registry propagation retries. See [Releasing](docs/releasing.md).
 

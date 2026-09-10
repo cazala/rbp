@@ -9,7 +9,7 @@ The normative protocol is [spec.md](spec.md). Other documents explain this repos
 | [Node operations](node-operations.md) | seed operators | keys, endpoints, configuration, lifecycle, recovery |
 | [Browser client](browser-client.md) | web developers | providers, privacy, scanning, dial-context rules |
 | [Onchain explorer](onchain-explorer.md) | web3 and release engineers | production ERC-5219 deployment, immutable storage, and verification |
-| [ENS onchain explorer](ens-onchain-explorer.md) | ENS owner and operators | point `resurrect.cazala.eth` at the verified router |
+| [WNS onchain explorer](wei-onchain-explorer.md) | operators and verifiers | `resurrect.wei` registration, records, renewal, and gateway verification |
 | [Hosted services](hosted-services.md) | operators and maintainers | reference seed, WSS tunnel, Pages deployment, and production checks |
 | [Security](security.md) | security reviewers and operators | threats, mitigations, residual risk |
 | [Audits](audits.md) | integrators and reviewers | external reports, exact scope, findings, and maintainer disposition |

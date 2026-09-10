@@ -49,13 +49,48 @@
     "ethPaid": "0.007086418126710057"
   },
   "gateways": {
+    "primary": "https://resurrect.wei.domains/",
+    "wns": "https://resurrect.wei.domains/",
+    "web3Name": "web3://resurrect.wei/",
     "web3": "web3://0x14765f12a7f068EDf42dF4920fd5170ADBa73306:1/",
     "w3eth": "https://0x14765f12a7f068edf42df4920fd5170adba73306.w3eth.io/",
     "w3link": "https://0x14765f12a7f068edf42df4920fd5170adba73306.1.w3link.io/"
   },
-  "ens": {
-    "name": "resurrect.cazala.eth",
-    "status": "pending-address-record"
+  "wns": {
+    "name": "resurrect.wei",
+    "status": "active",
+    "contract": "0x0000000000696760E15f265e828DB644A0c242EB",
+    "tokenId": "41087391431831184440468199834649177938136395864233436476895591760904781888274",
+    "tokenIdHex": "0x5ad6a3b22580f32032bc963e77903e6c2d7baa9199d605fa31cc1613dd98fb12",
+    "owner": "0x6E4a6b178Fea5FA7cE3051615C49F26b177E74F0",
+    "resolvedAddress": "0x14765f12a7f068EDf42dF4920fd5170ADBa73306",
+    "contentcontract": "eth:0x14765f12a7f068EDf42dF4920fd5170ADBa73306",
+    "contenthash": "0x",
+    "registeredAt": "2026-09-10T12:10:47Z",
+    "expiresAt": "2027-09-10T12:10:47Z",
+    "expiresAtUnix": 1820578247,
+    "registrationFeeWei": "500000000000000",
+    "registrationAndConfigurationGasUsed": 350304,
+    "weiPaid": "526901469028467",
+    "ethPaid": "0.000526901469028467",
+    "transactions": {
+      "commit": {
+        "hash": "0x0645328813aa11e75aaf9286bc11d35dd3905f417131736ebdcef8a9c54298d9",
+        "block": 25946893
+      },
+      "reveal": {
+        "hash": "0x010cce17ac09ea0a1deda110993d904e5af402217fe954439636866a9dad79c4",
+        "block": 25946901
+      },
+      "setAddr": {
+        "hash": "0x420f900ae42dfa456770c5334694de467d81e3f804fd3d6c58db92f549f3e09f",
+        "block": 25946902
+      },
+      "setContentcontract": {
+        "hash": "0x45d0cd803dd6e04f623d42e2cb5519f954fd0ec958a52a7b8cd37b57fec98674",
+        "block": 25946904
+      }
+    }
   },
   "verification": {
     "sourceCode": {
@@ -98,6 +133,14 @@
       "status": "pass",
       "allAssetsByteForByte": true,
       "rootDocumentServed": true
+    },
+    "weiDomains": {
+      "status": "pass",
+      "url": "https://resurrect.wei.domains/",
+      "nameRecordsMatchRouter": true,
+      "allAssetsByteForByte": true,
+      "rootDocumentServed": true,
+      "browserRendered": true
     }
   },
   "resources": [

@@ -1232,7 +1232,7 @@ Integration test with local EVM + two nodes:
 Implement:
 
 - Solidity/Foundry immutable registry contract,
-- Rust `resurrect-core`, `resurrect-ethereum`, and `resurrect-node` crates,
+- Rust `resurrect-core`, `resurrect-bootstrap`, `resurrect-ethereum`, and `resurrect-node` crates,
 - Tokio runtime,
 - one peer-record codec,
 - Alloy-based registry scanner/publisher,

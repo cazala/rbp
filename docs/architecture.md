@@ -32,7 +32,7 @@ application descriptor
               application handshake
 ```
 
-The Rust workspace separates protocol primitives (`resurrect-core`), EVM access (`resurrect-ethereum`), codecs (`resurrect-libp2p`), and an opinionated runnable composition (`resurrect-node`). The TypeScript package independently implements the browser-safe subset and verifies deterministic signed-record vectors shared with Rust.
+The Rust workspace separates protocol primitives (`resurrect-core`), EVM access (`resurrect-ethereum`), codecs (`resurrect-libp2p`), the transport-independent cold-start state machine (`resurrect-bootstrap`), and an opinionated runnable composition (`resurrect-node`). The TypeScript package independently implements the browser-safe subset and verifies deterministic signed-record vectors shared with Rust.
 
 ## Startup state machine
 

@@ -1,3 +1,19 @@
+//! Cold-start and network-resurrection state machine for Resurrect v1.
+//!
+//! This crate holds the transport-independent half of the protocol: the
+//! `cache → native discovery → Resurrect registry → isolated promotion` cycle
+//! described in the specification, expressed over four replaceable traits.
+//! It knows nothing about libp2p, Ethereum, or any particular runtime beyond
+//! needing a timer, so a host integrating Resurrect implements
+//! [`DiscoverySource`], [`NativeDiscovery`], [`PeerConnector`], and
+//! [`AnnouncementPublisher`] for its own stack and drives
+//! [`BootstrapController::run_cycle`].
+//!
+//! The controller is deliberately off the hot path. One call performs at most
+//! one pass and returns; it never loops, never holds a connection, and does no
+//! work at all once [`PeerConnector::connected_peers`] reports the policy
+//! target. Scheduling retries and backoff is the caller's responsibility.
+
 use async_trait::async_trait;
 use futures::{StreamExt, stream};
 use resurrect_core::{Namespace, PeerCandidate};

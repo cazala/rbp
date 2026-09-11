@@ -127,6 +127,7 @@ main() {
   scripts/check-packages.sh
 
   publish_crate resurrect-core
+  publish_crate resurrect-bootstrap
   publish_crate resurrect-libp2p
   publish_crate resurrect-ethereum
   publish_crate resurrect-node

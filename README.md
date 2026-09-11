@@ -35,6 +35,7 @@ Resurrect does not recover lost application data, define application membership,
 |---|---|---|
 | `contracts/` | Canonical Foundry project, registry, immutable-site router, and tests | source via `@resurrect-protocol/contracts` |
 | `crates/resurrect-core` | descriptors, namespaces, validation, bounded candidates | `resurrect-core` |
+| `crates/resurrect-bootstrap` | transport-independent cold-start state machine and its traits | `resurrect-bootstrap` |
 | `crates/resurrect-ethereum` | Alloy provider, scanner, publisher ABI | `resurrect-ethereum` |
 | `crates/resurrect-libp2p` | EIP-778 ENR and libp2p signed-record codecs | `resurrect-libp2p` |
 | `crates/resurrect-node` | native libp2p host, SQLite cache, supervisor, CLI | `resurrect-node` crate and binaries |

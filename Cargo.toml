@@ -1,5 +1,6 @@
 [workspace]
 members = [
+  "crates/resurrect-bootstrap",
   "crates/resurrect-core",
   "crates/resurrect-ethereum",
   "crates/resurrect-libp2p",

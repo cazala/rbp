@@ -31,10 +31,11 @@ Applications can consume the released crates independently:
 
 - `resurrect-core` for descriptors, namespace derivation, codec registration, validation, and candidate bounds;
 - `resurrect-ethereum` for the provider abstraction, Alloy HTTP adapter, scanner, and generated contract calls;
-- `resurrect-libp2p` for ENR and libp2p Signed Envelope verification; and
-- `resurrect-node` for reusable bootstrap traits, SQLite cache, native libp2p host, announcer, and supervisor.
+- `resurrect-libp2p` for ENR and libp2p Signed Envelope verification;
+- `resurrect-bootstrap` for the cold-start state machine and its four integration traits; and
+- `resurrect-node` for the SQLite cache, native libp2p host, announcer, and supervisor.
 
-The bootstrap controller depends on `DiscoverySource`, `NativeDiscovery`, `PeerConnector`, and `AnnouncementPublisher`. An application may implement these traits around its existing DHT, discv5, peer exchange, transport, or metrics system. It should pass registry-validated peers into its ordinary peer store and return to native discovery after connectivity forms.
+The bootstrap controller lives in `resurrect-bootstrap` and depends only on `DiscoverySource`, `NativeDiscovery`, `PeerConnector`, and `AnnouncementPublisher`. That crate pulls in neither libp2p nor Ethereum, so an application can adopt the state machine without taking on the reference node's stack. An application may implement these traits around its existing DHT, discv5, peer exchange, transport, or metrics system. It should pass registry-validated peers into its ordinary peer store and return to native discovery after connectivity forms.
 
 ## Dial and handshake sequence
 

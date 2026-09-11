@@ -1,0 +1,27 @@
+[package]
+name = "resurrect-bootstrap"
+description = "Interface-driven cold-start and network-resurrection state machine for Resurrect v1"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme.workspace = true
+keywords = ["p2p", "ethereum", "bootstrap", "libp2p"]
+categories = ["network-programming"]
+
+[dependencies]
+async-trait.workspace = true
+futures.workspace = true
+resurrect-core = { version = "0.4.0", path = "../resurrect-core" }
+serde.workspace = true
+thiserror.workspace = true
+tokio = { workspace = true, features = ["time"] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt", "time"] }
+
+[lints]
+workspace = true

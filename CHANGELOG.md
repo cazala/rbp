@@ -4,7 +4,13 @@ All notable changes are documented here. The project follows Semantic Versioning
 
 ## Unreleased
 
-No unreleased changes.
+### Changed
+
+- The bootstrap state machine and its `DiscoverySource`, `NativeDiscovery`,
+  `PeerConnector`, and `AnnouncementPublisher` traits moved from
+  `resurrect-node` into a new `resurrect-bootstrap` crate, which depends on
+  neither libp2p nor Ethereum. `resurrect-node` re-exports every moved item,
+  so existing imports keep working.
 
 ## 0.5.0 - 2026-09-11
 

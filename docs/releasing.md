@@ -4,7 +4,7 @@
 
 Every artifact that can be independently consumed is published:
 
-- crates.io: `resurrect-core`, `resurrect-libp2p`, `resurrect-ethereum`, `resurrect-node`;
+- crates.io: `resurrect-core`, `resurrect-bootstrap`, `resurrect-libp2p`, `resurrect-ethereum`, `resurrect-node`;
 - npm: `@resurrect-protocol/contracts`, `@resurrect-protocol/client`; and
 - GitHub Release: `resurrect-node` binaries for Linux, macOS, and Windows, SHA-256 checksums, and attestations.
 

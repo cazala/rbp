@@ -19,6 +19,7 @@ async-trait.workspace = true
 clap.workspace = true
 futures.workspace = true
 libp2p.workspace = true
+resurrect-bootstrap = { version = "0.4.0", path = "../resurrect-bootstrap" }
 resurrect-core = { version = "0.4.0", path = "../resurrect-core" }
 resurrect-ethereum = { version = "0.4.0", path = "../resurrect-ethereum" }
 resurrect-libp2p = { version = "0.4.0", path = "../resurrect-libp2p" }

@@ -16,13 +16,16 @@ REPOSITORY_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${REPOSITORY_ROOT}"
 
 perl -0pi -e "s/(\[workspace\.package\]\r?\nversion = \x22)[^\x22]+/\${1}${VERSION}/" Cargo.toml
-perl -0pi -e "s/(resurrect-(?:core|ethereum|libp2p|node) = \{ version = \x22)[^\x22]+/\${1}${VERSION}/g" crates/*/Cargo.toml
 
+# Verify before rewriting the dependency requirements, so a substitution that
+# silently matches nothing cannot leave the manifests half-updated.
 WORKSPACE_VERSION="$(perl -0ne 'print $1 if /\[workspace\.package\]\r?\nversion = "([^"]+)"/' Cargo.toml)"
 if [[ "${WORKSPACE_VERSION}" != "${VERSION}" ]]; then
   echo "workspace version is ${WORKSPACE_VERSION:-unset}, expected ${VERSION}" >&2
   exit 1
 fi
+
+perl -0pi -e "s/(resurrect-(?:bootstrap|core|ethereum|libp2p|node) = \{ version = \x22)[^\x22]+/\${1}${VERSION}/g" crates/*/Cargo.toml
 
 node - "${VERSION}" <<'NODE'
 const fs = require('node:fs')

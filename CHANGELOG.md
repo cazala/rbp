@@ -4,6 +4,10 @@ All notable changes are documented here. The project follows Semantic Versioning
 
 ## Unreleased
 
+No unreleased changes.
+
+## 0.5.0 - 2026-09-11
+
 ### Added
 
 - An archive-free TypeScript scan mode using a chain-profile block lookback,
@@ -29,6 +33,9 @@ All notable changes are documented here. The project follows Semantic Versioning
 - Injected-provider errors now preserve nested wallet messages instead of
   rendering `[object Object]`.
 - Ethereum browser discovery no longer requires historical block-body calls.
+- Documentation no longer links to the removed WNS onchain explorer guide;
+  the `resurrect.wei` registration record is cited from the deployment
+  manifest instead.
 
 ## 0.4.0 - 2026-09-03
 

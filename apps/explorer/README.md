@@ -69,8 +69,7 @@ zone-wide write access after the custom domain is attached.
 
 Pages does not update the immutable onchain version. The canonical onchain
 router and its `resurrect.wei` WNS records are documented in
-[Onchain explorer](../../docs/onchain-explorer.md) and
-[WNS onchain explorer](../../docs/wei-onchain-explorer.md).
+[Onchain explorer](../../docs/onchain-explorer.md).
 
 ## What the explorer reports
 

@@ -106,7 +106,7 @@ scripts/verify-onchain-explorer.sh \
 
 An onchain release cannot be patched. Build and test a reviewed source tree that pins the intended Beacon, deploy every resource and a new router, reconstruct every file through a caller-selected mainnet provider, verify the router source independently, test intended gateways and authenticated ping, replace the package deployment manifest, and then update both WNS router records. Never introduce a mutable owner or proxy merely to reuse an address.
 
-See [WNS onchain explorer](wei-onchain-explorer.md) for the exact `resurrect.wei` registration, verification, renewal, and future-router procedure.
+The `wns` block of [`deployments/ethereum-mainnet-explorer.json`](../deployments/ethereum-mainnet-explorer.json) records the current `resurrect.wei` registration: resolver contract, token id, owner, `contentcontract` record, expiry, and every registration transaction. Repointing the name means updating both the `addr` and ERC-6821 `contentcontract` records to the new router from the account that owns the name.
 
 ## Discovery without an indexer
 

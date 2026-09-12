@@ -29,6 +29,8 @@ enr = "0.13.0"
 futures = "0.3.31"
 hex = "0.4.3"
 libp2p-identity = { version = "0.2.13", features = ["ed25519", "peerid", "rand"] }
+libp2p-core = "0.43.2"
+libp2p-swarm = "0.47.1"
 libp2p = { version = "0.56.0", features = ["dns", "identify", "macros", "mdns", "noise", "ping", "tcp", "tokio", "websocket", "yamux"] }
 multiaddr = "0.18.2"
 prost = "0.14.1"

@@ -12,21 +12,31 @@ readme.workspace = true
 keywords = ["p2p", "ethereum", "enr", "libp2p"]
 categories = ["network-programming", "cryptography"]
 
+[features]
+default = []
+# Composable Swarm integration. Optional because the codecs above are useful to
+# a browser or an ENR tool that never builds a Swarm.
+behaviour = ["dep:libp2p-core", "dep:libp2p-swarm", "dep:resurrect-bootstrap", "dep:tokio"]
+
 [dependencies]
 alloy-rlp.workspace = true
 async-trait.workspace = true
 enr.workspace = true
+libp2p-core = { workspace = true, optional = true }
 libp2p-identity.workspace = true
+libp2p-swarm = { workspace = true, optional = true }
 multiaddr.workspace = true
 prost.workspace = true
+resurrect-bootstrap = { version = "0.4.0", path = "../resurrect-bootstrap", optional = true }
 resurrect-core = { version = "0.4.0", path = "../resurrect-core" }
 thiserror.workspace = true
+tokio = { workspace = true, features = ["sync", "time"], optional = true }
 
 [dev-dependencies]
 hex.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-tokio.workspace = true
+tokio = { workspace = true, features = ["macros", "rt", "sync", "time"] }
 
 [lints]
 workspace = true

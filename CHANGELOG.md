@@ -4,6 +4,14 @@ All notable changes are documented here. The project follows Semantic Versioning
 
 ## Unreleased
 
+### Added
+
+- An optional `behaviour` feature on `resurrect-libp2p` providing a composable
+  rust-libp2p `NetworkBehaviour`. An application adds it to its existing
+  `Swarm` and hands the paired `Connector` to the bootstrap controller, rather
+  than surrendering its `Swarm` to the reference node's host. The behaviour
+  opens no streams and issues no dial until the controller asks for one.
+
 ### Changed
 
 - The bootstrap state machine and its `DiscoverySource`, `NativeDiscovery`,

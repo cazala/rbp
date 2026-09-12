@@ -5,6 +5,8 @@
 //! consumes raw RLP bytes (never the textual `enr:` representation) and relies
 //! on the EIP-778 decoder's signature verification.
 
+#[cfg(feature = "behaviour")]
+pub mod behaviour;
 mod endpoint_policy;
 mod enr_codec;
 mod signed_peer_record;

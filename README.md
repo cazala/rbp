@@ -37,7 +37,7 @@ Resurrect does not recover lost application data, define application membership,
 | `crates/resurrect-core` | descriptors, namespaces, validation, bounded candidates | `resurrect-core` |
 | `crates/resurrect-bootstrap` | transport-independent cold-start state machine and its traits | `resurrect-bootstrap` |
 | `crates/resurrect-ethereum` | Alloy provider, scanner, publisher ABI | `resurrect-ethereum` |
-| `crates/resurrect-libp2p` | EIP-778 ENR and libp2p signed-record codecs | `resurrect-libp2p` |
+| `crates/resurrect-libp2p` | EIP-778 ENR and libp2p signed-record codecs, optional `Swarm` behaviour | `resurrect-libp2p` |
 | `crates/resurrect-node` | native libp2p host, SQLite cache, supervisor, CLI | `resurrect-node` crate and binaries |
 | `packages/ts` | browser/static provider and registry scanner | `@resurrect-protocol/client` |
 | `packages/contracts` | canonical Solidity source and ABI | `@resurrect-protocol/contracts` |
@@ -62,6 +62,7 @@ The native `resurrect-node` binary has no Node.js runtime dependency.
 ```bash
 cargo build --workspace --locked
 cargo test --workspace --all-targets --locked
+cargo test --workspace --all-targets --all-features --locked
 cargo clippy --workspace --all-targets --locked -- -D warnings -W clippy::pedantic
 forge test --root contracts
 corepack enable

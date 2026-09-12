@@ -31,11 +31,25 @@ Applications can consume the released crates independently:
 
 - `resurrect-core` for descriptors, namespace derivation, codec registration, validation, and candidate bounds;
 - `resurrect-ethereum` for the provider abstraction, Alloy HTTP adapter, scanner, and generated contract calls;
-- `resurrect-libp2p` for ENR and libp2p Signed Envelope verification;
+- `resurrect-libp2p` for ENR and libp2p Signed Envelope verification, and, under its optional
+  `behaviour` feature, a `NetworkBehaviour` that composes into an existing `Swarm`;
 - `resurrect-bootstrap` for the cold-start state machine and its four integration traits; and
 - `resurrect-node` for the SQLite cache, native libp2p host, announcer, and supervisor.
 
 The bootstrap controller lives in `resurrect-bootstrap` and depends only on `DiscoverySource`, `NativeDiscovery`, `PeerConnector`, and `AnnouncementPublisher`. That crate pulls in neither libp2p nor Ethereum, so an application can adopt the state machine without taking on the reference node's stack. An application may implement these traits around its existing DHT, discv5, peer exchange, transport, or metrics system. It should pass registry-validated peers into its ordinary peer store and return to native discovery after connectivity forms.
+
+An application already running rust-libp2p does not have to implement `PeerConnector` itself. `resurrect-libp2p`'s `behaviour` feature provides `behaviour::connector`, which returns a `NetworkBehaviour` to add to an existing `Swarm` and a `Connector` to hand the controller:
+
+```rust
+let (resurrect, connector) = resurrect_libp2p::behaviour::connector(8);
+// add `resurrect` to your NetworkBehaviour derive alongside Kademlia, identify, ...
+// then drive the controller from an ordinary task:
+let outcome = BootstrapController::new(&cache, &native, &registry, &connector, &publisher, policy)
+    .run_cycle(namespace)
+    .await?;
+```
+
+The behaviour opens no streams and defines no wire protocol; it translates controller dial requests into `Swarm` dials and reports the outcome back. It reaches the network only when the controller asks for a dial, and the controller asks for nothing while the connection target is already met, so a healthy node pays nothing for it.
 
 ## Dial and handshake sequence
 

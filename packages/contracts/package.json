@@ -1,6 +1,6 @@
 {
   "name": "@resurrect-protocol/contracts",
-  "version": "0.4.0",
+  "version": "0.6.0",
   "description": "Canonical immutable Solidity contracts, ABIs, and Ethereum deployments for Resurrect",
   "license": "MIT",
   "repository": {

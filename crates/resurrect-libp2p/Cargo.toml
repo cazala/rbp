@@ -27,8 +27,8 @@ libp2p-identity.workspace = true
 libp2p-swarm = { workspace = true, optional = true }
 multiaddr.workspace = true
 prost.workspace = true
-resurrect-bootstrap = { version = "0.4.0", path = "../resurrect-bootstrap", optional = true }
-resurrect-core = { version = "0.4.0", path = "../resurrect-core" }
+resurrect-bootstrap = { version = "0.6.0", path = "../resurrect-bootstrap", optional = true }
+resurrect-core = { version = "0.6.0", path = "../resurrect-core" }
 thiserror.workspace = true
 tokio = { workspace = true, features = ["sync", "time"], optional = true }
 

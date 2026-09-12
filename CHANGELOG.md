@@ -4,6 +4,10 @@ All notable changes are documented here. The project follows Semantic Versioning
 
 ## Unreleased
 
+No unreleased changes.
+
+## 0.6.0 - 2026-09-11
+
 ### Added
 
 - A `@resurrect-protocol/client/libp2p` subpath export implementing the
@@ -24,6 +28,16 @@ All notable changes are documented here. The project follows Semantic Versioning
   `resurrect-node` into a new `resurrect-bootstrap` crate, which depends on
   neither libp2p nor Ethereum. `resurrect-node` re-exports every moved item,
   so existing imports keep working.
+- CI now runs clippy and the test suite with `--all-features` as well as with
+  the default set, so optional-feature code cannot go untested.
+
+### Fixed
+
+- The release version rewrite no longer silently does nothing on a CRLF
+  checkout, which left the Windows runner resolving a workspace pinned at the
+  previous version against dependency requirements pinned at the new one, and
+  cost 0.5.0 its published binaries. It now also fails loudly when the
+  workspace version is not what was requested.
 
 ## 0.5.0 - 2026-09-11
 

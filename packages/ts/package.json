@@ -15,6 +15,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./libp2p": {
+      "types": "./dist/libp2p.d.ts",
+      "import": "./dist/libp2p.js"
     }
   },
   "files": [
@@ -29,9 +33,11 @@
     "test:unit": "vitest run"
   },
   "dependencies": {
+    "@libp2p/interface": "3.3.0",
     "@libp2p/peer-id": "6.0.15",
     "@libp2p/peer-record": "9.0.16",
     "@multiformats/multiaddr": "13.0.3",
+    "main-event": "1.0.5",
     "viem": "2.55.16"
   },
   "devDependencies": {

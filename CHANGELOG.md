@@ -6,6 +6,11 @@ All notable changes are documented here. The project follows Semantic Versioning
 
 ### Added
 
+- A `@resurrect-protocol/client/libp2p` subpath export implementing the
+  js-libp2p `PeerDiscovery` interface, so a browser or Node host can consume
+  the registry as an ordinary discovery source. Its `shouldScan` gate
+  short-circuits before the provider is touched, so a host with peers spends
+  no request on it.
 - An optional `behaviour` feature on `resurrect-libp2p` providing a composable
   rust-libp2p `NetworkBehaviour`. An application adds it to its existing
   `Swarm` and hands the paired `Connector` to the bootstrap controller, rather

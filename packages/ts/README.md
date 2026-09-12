@@ -4,6 +4,31 @@ Browser/static Resurrect v1 registry discovery with caller-supplied JSON-RPC or 
 
 It does not request wallet accounts, ship a mandatory RPC hostname, persist URLs automatically, dial a transport, or authenticate your application protocol.
 
+## Use it with libp2p
+
+A js-libp2p host can consume the registry directly through the `./libp2p`
+subpath export, which implements the standard `PeerDiscovery` interface:
+
+```ts
+import { resurrectPeerDiscovery } from '@resurrect-protocol/client/libp2p'
+
+const node = await createLibp2p({
+  peerDiscovery: [
+    resurrectPeerDiscovery({
+      client,
+      // Resurrect is a recovery path, not a discovery loop. Without this gate
+      // a healthy node keeps reading Ethereum for peers it does not need.
+      shouldScan: () => node.getConnections().length < 2
+    })
+  ]
+})
+```
+
+Discovered peers arrive as ordinary `peer` events and land in the host's peer
+store. Each one has had its signed record verified, but discovery is not
+endorsement: the host applies its usual dial and connection-gating policy, as
+it would for any other discovery source.
+
 ## Install
 
 ```bash

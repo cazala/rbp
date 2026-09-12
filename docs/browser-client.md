@@ -82,6 +82,25 @@ The reference WSS endpoint is
 `/dns4/resurrect-ws.caza.la/tcp/443/wss`. TLS terminates at Cloudflare Tunnel;
 Noise remains the end-to-end peer authentication layer.
 
+## libp2p peer discovery
+
+`@resurrect-protocol/client/libp2p` exports `ResurrectPeerDiscovery` and the
+`resurrectPeerDiscovery` factory, implementing the js-libp2p `PeerDiscovery`
+interface so a browser or Node host can consume the registry without writing
+its own scan loop. Verified candidates are emitted as `peer` events carrying a
+`PeerInfo`; a candidate whose identity fails to parse is dropped, and a
+candidate keeps every endpoint that parses.
+
+`shouldScan` gates each attempt and short-circuits before the provider is
+touched, so a host that already has peers spends no Ethereum request on
+having Resurrect installed. It defaults to scanning on every interval, which
+suits only a host with no other discovery mechanism. `scanOnce()` is public
+for hosts that would rather drive recovery from their own connectivity events
+than on a timer.
+
+Scan failures reach the optional `onError` callback and are never thrown at
+the host: a discovery source is allowed to fail.
+
 ## Resource options
 
 `scan` accepts confirmations, a chain-profile `maxBlockLookback`, initial/minimum chunk width, maximum raw logs, maximum retained candidates, maximum endpoints per signed record, and a private-endpoint opt-in. Counts must be positive safe integers and block quantities must be non-negative. A supplied lookback must conservatively cover every block that can occur during the full TTL; making it smaller is an availability bug.

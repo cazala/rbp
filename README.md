@@ -39,7 +39,7 @@ Resurrect does not recover lost application data, define application membership,
 | `crates/resurrect-ethereum` | Alloy provider, scanner, publisher ABI | `resurrect-ethereum` |
 | `crates/resurrect-libp2p` | EIP-778 ENR and libp2p signed-record codecs, optional `Swarm` behaviour | `resurrect-libp2p` |
 | `crates/resurrect-node` | native libp2p host, SQLite cache, supervisor, CLI | `resurrect-node` crate and binaries |
-| `packages/ts` | browser/static provider and registry scanner | `@resurrect-protocol/client` |
+| `packages/ts` | browser/static provider, registry scanner, libp2p peer discovery | `@resurrect-protocol/client` |
 | `packages/contracts` | canonical Solidity source and ABI | `@resurrect-protocol/contracts` |
 | `apps/explorer` | browser discovery, authenticated WSS dial, identify, and ping UI | [resurrect.wei](https://resurrect.wei.limo/) |
 | `test-vectors/` | deterministic Rust/TypeScript interoperability data | repository data |
